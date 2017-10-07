@@ -82,6 +82,7 @@ void DataFile::prepareResults(){
 			aux.push_back(ids[id].asUInt());
 		}
 		id_results.push_back(aux);
+		isLong.push_back(particles[particle][6].asUInt());
 	}
 
 	for(int i = 0; i < id_results.size(); i++){
@@ -97,8 +98,16 @@ void DataFile::prepareResults(){
 
 void DataFile::compareTracks(vector<TrackS> tracks){
 	/*opening file*/
-	ofstream goodTrack("good.txt");
-	ofstream fakeTrack("others.txt");
+	ofstream goodTrack("good.txt"); //good tracks
+	ofstream fakeTrack("fake.txt"); //fake tracks
+	ofstream cloneTrack("clone.txt"); //clone tracks
+
+
+	int visitedTracks[id_results.size()];
+	for(int i = 0; i < id_results.size(); i++)
+		visitedTracks[i] = 0;
+
+
 
 	cout << "Total de tracks originais: " <<  id_results.size() << endl;
 	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
@@ -106,6 +115,9 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	/*variables*/
 	int goodTracks = 0;
 	int fakeTracks = 0;
+	int cloneTracks = 0;
+	int longTracks = 0;
+
 
 	/*comparing formed tracks with original tracks*/
 	for(int track = 0; track < tracks.size(); track++){
@@ -132,19 +144,37 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 						float goodPer = (float) good/id_results[i].size();
 						// cout << goodPer << endl;
 						if(goodPer >= 0.6){
-							goodTracks++;
-							// cout << goodPer << endl;
-							goodTrack << goodTracks << ":";
-							for(int i = hits.size()-1; i>= 0; i--) 
-								goodTrack << hits[i].id() << ", ";
-							goodTrack << endl;
+							if(!visitedTracks[i]){
+								visitedTracks[i]++;
+								// cout << "real: indice: " << i << " contagem: " << visitedTracks[i] << endl;
+								goodTracks++;
+								// cout << goodPer << endl;
+								goodTrack << goodTracks << ":";
+								for(int k = hits.size()-1; k>= 0; k--) 
+									goodTrack << hits[k].id() << ", ";
+								goodTrack << endl;
+								if(isLong[i]){
+									longTracks++;
+									// cout << "long track: " << i << endl; 
+								}
+							}
+							else if(visitedTracks[i] > 0){
+								visitedTracks[i]++;
+								// cout << "clone: indice: " << i << " contagem: " << visitedTracks[i] << endl;
+								cloneTracks++;
+								// cout << goodPer << endl;
+								cloneTrack << cloneTracks << ":";
+								for(int k = hits.size()-1; k>= 0; k--) 
+									cloneTrack << hits[k].id() << ", ";
+								cloneTrack << endl;
+							}
 						}  
 						else{
 							// cout << goodPer << ", " << fakeTracks << endl;
 							fakeTracks++;
 							fakeTrack << fakeTracks << ":";
-							for(int i = hits.size()-1; i>= 0; i--) 
-								fakeTrack << hits[i].id() << ", ";
+							for(int m = hits.size()-1; m>= 0; m--) 
+								fakeTrack << hits[m].id() << ", ";
 							fakeTrack << endl;
 						}
 						break;
@@ -160,7 +190,9 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 
 
 	cout << "Total de tracks good: " <<  goodTracks << endl;
-	cout << "Total de tracks fakes e clones: " <<  fakeTracks << endl;
+	cout << "Total de tracks fakes: " <<  fakeTracks << endl;
+	cout << "Total de tracks clones: " << cloneTracks << endl;
+	cout << "Total de long tracks: " << longTracks << endl;
 
 	/*closing file*/
 	goodTrack.close();
