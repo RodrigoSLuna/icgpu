@@ -5,7 +5,7 @@ saida: dados.o saida.o tracking.o
 saida.o: code.cpp dados.h tracking.h
 	g++ -o saida.o -c code.cpp  -I/usr/include/jsoncpp -ljsoncpp
 tracking.o: tracking.cpp
-	g++ -o tracking.o -c tracking.cpp
+	g++ -o tracking.o -c tracking.cpp -I/usr/include/jsoncpp -ljsoncpp
 dados.o: dados.cpp
 	g++ -o dados.o -c dados.cpp -I/usr/include/jsoncpp -ljsoncpp
 	#g++ -I  /usr/include/jsoncpp/ dados.cpp -ljsoncpp
