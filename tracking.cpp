@@ -4,7 +4,6 @@
  */
 
 #include "tracking.h"
-
 using namespace std;
 
 /*compare if two hits are common*/
@@ -199,31 +198,49 @@ void Tracking::backwardProcess(vector<vector<TrackSegment> > &tSegment, vector<T
 }
 
 void Tracking::makeTracking(DataFile data){
-  int no_sensors = data.getNoSensor();
-  vector<vector<PrPixelHit> > hits = data.getHits();
-  /*make segments*/
+	/*time*/
+	clock_t tInicio, tFim, tDecorrido;
+	int no_sensors = data.getNoSensor();
+	vector<vector<PrPixelHit> > hits = data.getHits();
+
+	/*start counting time*/
+	tInicio = clock();
+	/*make segments*/
 	for(unsigned isen = 0; isen < no_sensors-2; isen++){
 		vector<TrackSegment> tmpSeg = makeSimpleSegment(hits[isen+2], hits[isen]);
 		tSegment.push_back(tmpSeg);
 	}
+	/*finish counting time*/
+	tDecorrido = clock() - tInicio;
+	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'makeSimpleSegment' function. " <<  endl;
+	
 
-  //count the total of segments
+	//count the tothal of segments
 	int contSeg = 0;
-	for(int i = 0; i <  (int) tSegment.size(); i++){
+	for(int i = 0; i < (int) tSegment.size(); i++){
 		contSeg = contSeg+tSegment[i].size();
 	}
+	cout << "segments: " << contSeg << endl;
 
-  cout << contSeg << endl;
-
-  int i = 0;
+	int i = 0;
+	/*start counting time*/
+	tInicio = clock();
 	/*increase the status*/
 	for(int isen = 0; isen < (int) tSegment.size()-2; isen++){
 		//std::cout << tSegment[isen].size() << std::endl;
 		forwardProcess(tSegment[isen], tSegment[isen+2], hits);
 	}
+	/*finish counting time*/
+	tDecorrido = clock() - tInicio;
+	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'forwardProcess' function. " <<  endl;
 
-  /*backward process*/
+	/*start counting time*/
+	tInicio = clock();
+	/*backward process*/
 	backwardProcess(tSegment, tracks, hits);
+	/*finish counting time*/
+	tDecorrido = clock() - tInicio;
+	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'backwardProcess' function. " <<  endl;
 
 }
 
