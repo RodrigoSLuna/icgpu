@@ -26,9 +26,10 @@ class DataFile{
 
   private:
     int no_sensor;
-		int no_hits;
-		vector<float> module_z;
-		vector<int> no_hits_sensor;
-		vector<vector<PrPixelHit> > hits;
-        vector<vector<unsigned int> > id_results;
+	int no_hits;
+	vector<float> module_z;
+	vector<int> no_hits_sensor;
+	vector<vector<PrPixelHit> > hits;
+    vector<vector<unsigned int> > id_results;
+    vector<int> isLong;
 };
