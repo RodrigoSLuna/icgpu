@@ -92,6 +92,7 @@ void DataFile::prepareResults(){
 		dataFile << endl;
 	}
 
+    cout << "total tracks: " << id_results.size() << endl;
 	/*closing file*/
 	dataFile.close();
 }
@@ -108,8 +109,14 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 		visitedTracks[i] = 0;
 
 
+    int countLong = 0;
+    for(int i = 0; i < isLong.size(); i++){
+    	cout << isLong[i] << " ";
+        if(isLong[i]) countLong++;
+    }
 
-	cout << "Total de tracks originais: " <<  id_results.size() << endl;
+	cout << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
 	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
 
 	/*variables*/
@@ -189,10 +196,10 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	}
 
 
-	cout << "Total de tracks good: " <<  goodTracks << endl;
+	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
 	cout << "Total de tracks fakes: " <<  fakeTracks << endl;
 	cout << "Total de tracks clones: " << cloneTracks << endl;
-	cout << "Total de long tracks: " << longTracks << endl;
+	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
 
 	/*closing file*/
 	goodTrack.close();
