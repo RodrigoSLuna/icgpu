@@ -1,15 +1,22 @@
-all: saida
-	./saida
+#all: saida
+#	./saida
 saida: dados.o saida.o tracking.o
-	g++ -o saida tracking.o dados.o saida.o  -I/usr/include/jsoncpp -ljsoncpp
+	g++ -o saida tracking.o dados.o saida.o  -I/usr/include/jsoncpp -ljsoncpp -lpthread
 saida.o: code.cpp dados.h tracking.h
-	g++ -o saida.o -c code.cpp  -I/usr/include/jsoncpp -ljsoncpp
+	g++ -o saida.o -c code.cpp  -I/usr/include/jsoncpp -ljsoncpp -lpthread
 tracking.o: tracking.cpp
-	g++ -o tracking.o -c tracking.cpp -I/usr/include/jsoncpp -ljsoncpp
+	g++ -o tracking.o -c tracking.cpp -I/usr/include/jsoncpp -ljsoncpp -lpthread
 dados.o: dados.cpp
-	g++ -o dados.o -c dados.cpp -I/usr/include/jsoncpp -ljsoncpp
+	g++ -o dados.o -c dados.cpp -I/usr/include/jsoncpp -ljsoncpp  
 	#g++ -I  /usr/include/jsoncpp/ dados.cpp -ljsoncpp
 
+
+run:
+	./saida
+
+
+clean:
+	rm -f *.o
 
 
 
