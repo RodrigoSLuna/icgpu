@@ -5,6 +5,10 @@
 
 #include "tracking.h"
 using namespace std;
+#if defined(__cplusplus)
+extern "C"
+#endif
+
 
 /*compare if two hits are common*/
 bool Tracking::compareHits(PrPixelHit one, PrPixelHit two){
@@ -112,7 +116,7 @@ vector<TrackSegment> Tracking::makeSimpleSegment(vector<PrPixelHit> nextHits, ve
 			float ty = (y_one - y_zero)/(z_one - z_zero);
 			//see the angle between the two hits
 			if(sqrt(tx*tx+ty*ty) <= ACCEPTANCE_ANGLE){
-                                     	vector<PrPixelHit> tmp;
+                vector<PrPixelHit> tmp;
 				//make segment object
 				tmp.push_back(currentHits[id_current]);
 				tmp.push_back(nextHits[id_next]);
@@ -184,6 +188,7 @@ void Tracking::backwardProcess(vector<vector<TrackSegment> > &tSegment, vector<T
 		for(int iseg = 0; iseg < (int) currentSensor.size(); iseg++){
 			TrackS track(currentSensor[iseg]);
 			//make track
+			// cout << "sensor: " << isen-2 << endl;
 			makeTrack(tSegment, track, isen-2, hits);
 
 
@@ -194,6 +199,92 @@ void Tracking::backwardProcess(vector<vector<TrackSegment> > &tSegment, vector<T
 			tracks.push_back(track);
 			//return;
 		}
+	}
+}
+
+
+
+
+/*faz track*/
+void *Tracking::backwardProcessParallel(void *arg){
+	Tracking::thread_data *my_data;
+   	my_data = ( Tracking::thread_data *) arg;
+ 
+
+
+  //  cout << "Thread ID : " << my_data->thread_id ;
+   cout << " Sensor : " << my_data->sensor_id << endl;
+   
+
+   TrackSegment aux;
+   int indice = 0;
+   int id = my_data->sensor_id;
+   vector<vector<TrackSegment> > tSegment = my_data->tSegment;
+   TrackS &track = my_data->track;
+   vector<vector<PrPixelHit> > hits = my_data ->hits;
+
+    Tracking b;
+	for(; id >= 0; id = id-2){
+		vector<TrackS> trackAux = b.combinationTrack(tSegment, track, id, hits);
+		indice = b.chooseBestAngle(trackAux);
+		track = trackAux[indice];
+		// vector<PrPixelHit> Thits = track.getHits();
+		// cout << "track: " << Thits.size() << endl;
+		// track.setLastSeg(trackAux[indice], track);
+	}
+	my_data->track = track;
+	return (void *) my_data;
+	
+}
+
+
+void Tracking::parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<TrackS> &tracks, vector<vector<PrPixelHit> > hits){
+	int i = 1;
+	int rc;
+	cout << "estou aqui" << endl;
+
+	for(int isen =  tSegment.size()-1; isen >= 0; isen--){
+		vector<TrackSegment> currentSensor = tSegment[isen];
+		int NUM_THREADS = (int) currentSensor.size();
+		int NUMCONS = (int) currentSensor.size();
+		int NUMPROD = (int) currentSensor.size();
+		pthread_t threads[NUM_THREADS];
+		pthread_attr_t attr;
+		void *status;
+
+		pthread_attr_init(&attr);
+   		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+		
+		
+		thread_data td[NUM_THREADS];
+		
+		for(int iseg = 0; iseg < NUMPROD; iseg++){
+			TrackS track(currentSensor[iseg]);
+			td[iseg].thread_id = iseg;
+			td[iseg].tSegment = tSegment;
+			td[iseg].track = track;
+			td[iseg].sensor_id = isen-2;
+			td[iseg].hits = hits;
+			pthread_create(&(threads[iseg]), NULL, backwardProcessParallel, (void *) &td[iseg]);
+      	}
+   
+		for(i=0; i<NUMPROD; i++){
+			// void *returnValue;
+			pthread_join(threads[i], &status);
+			if (status != 0){
+				vector<PrPixelHit> aux = td[i].track.getHits();
+				cout << "TAMANHO: " << aux.size() << endl;
+				if(aux.size() <= 2){
+					cout << "entrei aqui" << endl;
+					continue;
+				} 
+				// printTrack(track, i); i++;
+				tracks.push_back(td[i].track);
+			}
+			else
+				cout << "thread failed" << endl;
+   		}	 
+		
 	}
 }
 
@@ -237,11 +328,13 @@ void Tracking::makeTracking(DataFile data){
 	/*start counting time*/
 	tInicio = clock();
 	/*backward process*/
-	backwardProcess(tSegment, tracks, hits);
+	parallelTracking(tSegment, tracks, hits);
 	/*finish counting time*/
 	tDecorrido = clock() - tInicio;
 	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'backwardProcess' function. " <<  endl;
 
 }
+
+
 
 vector<TrackS> Tracking::getTracks() {return tracks;}
