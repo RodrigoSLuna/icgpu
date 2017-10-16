@@ -20,7 +20,7 @@ void DataFile::prepareData(string fileName) {
 	ofstream log("log.txt", ios_base::app | ios_base::out);
 
 	// ifstream ifs("0.json");
-	ifstream ifs(fileName);
+	ifstream ifs(fileName.c_str());
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
@@ -74,7 +74,7 @@ void DataFile::prepareResults(string fileName){
 	/*opening file*/
 	ofstream dataFile("dados.txt");
 	// ifstream ifs("0.json");
-	ifstream ifs(fileName);
+	ifstream ifs(fileName.c_str());
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
