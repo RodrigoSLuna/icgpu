@@ -3,22 +3,32 @@
  *  @author Leticia Freire
  */
 
+
 #include <fstream>
 #include <iostream>
 #include <math.h>
 #include <vector>
 #include <algorithm>
 #include <stdlib.h>
+#include <time.h>
+#include <pthread.h>
 #include "PrPixelHit.h"
 // #include "structs.h"
 #include "dados.h"
 using namespace std;
+
+
+#include <unistd.h>
+#include <cstdlib>
+
 
 const int INITIAL_STATUS = 1;
 const int DIFFERENCE_SENSOR = 3;
 const float BREAKING_ANGLE = 0.005;
 //const float BREAKING_ANGLE = 1.5708;
 const float ACCEPTANCE_ANGLE = 0.1;
+// const float ACCEPTANCE_ANGLE = 0.15;
+
 
 class Tracking{
   public:
@@ -35,7 +45,21 @@ class Tracking{
     bool compareStatus(int status_one, int status_two);
     int chooseBestAngle(vector<TrackS> trackAux);
     vector<TrackS> getTracks();
+    void parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<TrackS> &tracks, vector<vector<PrPixelHit> > hits);
+    static void *backwardProcessParallel(void *arg);
+
+
+
   private:
     vector<vector<TrackSegment> > tSegment;
     vector<TrackS> tracks;
+    struct thread_data {
+       int  thread_id;
+       vector<vector<TrackSegment> > tSegment;
+       TrackS track;
+       int sensor_id;
+       vector<vector<PrPixelHit> > hits;
+    };
 };
+
+
