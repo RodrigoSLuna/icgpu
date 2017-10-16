@@ -6,20 +6,21 @@
 #include <fstream>
 #include <iostream>
 #include <json/json.h>
+#include <string>
 #include "PrPixelHit.h"
 #include "structs.h"
 using namespace std;
 
 class DataFile{
   public:
-    void prepareData();
+    void prepareData(string fileName);
     int getNoSensor();
     int getNoHit();
     vector<float> getModule();
     vector<int> getNoHitsSensor();
     vector<vector<PrPixelHit> > getHits();
     vector<PrPixelHit> getHitsSensor(int i);
-    void prepareResults();
+    void prepareResults(string fileName);
     vector<vector<unsigned int> > getResult();
     void compareTracks(vector<TrackS> tracks);
     

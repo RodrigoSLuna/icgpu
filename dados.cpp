@@ -14,13 +14,20 @@
 
 using namespace std;
 
-void DataFile::prepareData() {
+void DataFile::prepareData(string fileName) {
 	/*opening file*/
 	ofstream dataFile("dados.txt");
-	ifstream ifs("0.json");
+	ofstream log("log.txt", ios_base::app | ios_base::out);
+
+	// ifstream ifs("0.json");
+	ifstream ifs(fileName);
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
+
+	/*printing the file name*/
+	log << "arquivo " << fileName << endl;
+ 	
 
 	/*number of sensors from 0.json */
 	no_sensor = obj["event"]["number_of_sensors"].asInt();
@@ -60,12 +67,14 @@ void DataFile::prepareData() {
 
 	/*closing file*/
 	dataFile.close();
+	log.close();
 }
 
-void DataFile::prepareResults(){
+void DataFile::prepareResults(string fileName){
 	/*opening file*/
 	ofstream dataFile("dados.txt");
-	ifstream ifs("0.json");
+	// ifstream ifs("0.json");
+	ifstream ifs(fileName);
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
@@ -102,6 +111,8 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	ofstream goodTrack("good.txt"); //good tracks
 	ofstream fakeTrack("fake.txt"); //fake tracks
 	ofstream cloneTrack("clone.txt"); //clone tracks
+	ofstream angulosTrack("angulos.txt"); 
+	ofstream log("log.txt", ios_base::app | ios_base::out);
 
 
 	int visitedTracks[id_results.size()];
@@ -111,7 +122,7 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 
     int countLong = 0;
     for(int i = 0; i < isLong.size(); i++){
-    	cout << isLong[i] << " ";
+    	// cout << isLong[i] << " ";
         if(isLong[i]) countLong++;
     }
 
@@ -129,6 +140,7 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	/*comparing formed tracks with original tracks*/
 	for(int track = 0; track < tracks.size(); track++){
 		vector<PrPixelHit> hits = tracks[track].getHits();
+		// cout << "ultimo angulo: " << tracks[track].getLastAngle() << endl;
 		/*comecar de tras pra frente*/
 		int hit = hits.size()-1;
 		unsigned int id = hits[hit].id();
@@ -162,6 +174,7 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 								goodTrack << endl;
 								if(isLong[i]){
 									longTracks++;
+									angulosTrack << tracks[track].getLastAngle() << endl;
 									// cout << "long track: " << i << endl; 
 								}
 							}
@@ -201,9 +214,18 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	cout << "Total de tracks clones: " << cloneTracks << endl;
 	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
 
+	/*printing on file*/
+	log << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
+	log << "Total de tracks fakes: " <<  fakeTracks << endl;
+	log << "Total de tracks clones: " << cloneTracks << endl;
+	log << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
+
 	/*closing file*/
 	goodTrack.close();
 	fakeTrack.close();
+	cloneTrack.close();
+	angulosTrack.close();
+	log.close();
 
 }
 

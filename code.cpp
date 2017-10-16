@@ -3,42 +3,61 @@
  *  @author Leticia Freire
  */
 
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <ctime>
+#include <locale>
 //#include "dados.h"
 #include "tracking.h"
 
 using namespace std;
 
 int main(){
-	DataFile data;
-	cout << "Rodando codigo: prepareData()" << endl;
-	data.prepareData();
-	cout << data.getNoHit() << endl;
+	/*including date*/
+	ofstream log("log.txt", ios_base::app | ios_base::out);
+	time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    log << (now->tm_year + 1900) << '-' 
+         << (now->tm_mon + 1) << '-'
+         <<  now->tm_mday
+         << endl;
 
-	cout << "testando os resultados" << endl;
- 	data.prepareResults();
- 	// exit(0);
+    /*adding the file names*/
+    vector<string> s;
+	s.push_back("0.json"); s.push_back("1.json"); s.push_back("2.json");
+	for(int file = 0; file < s.size(); file++){
+		DataFile data;
+		cout << "Rodando codigo: prepareData()" << endl;
+		
+		data.prepareData(s[file]);
+		cout << data.getNoHit() << endl;
 
-	Tracking teste;
-	cout << "Rodando codigo: makeTracking()" << endl;
-	teste.makeTracking(data);
+		cout << "testando os resultados" << endl;
+	 	data.prepareResults(s[file]);
+	 	// exit(0);
 
-	vector<TrackS> tracks = teste.getTracks();
-	cout << "Rodando codigo: compareTracks(tracks)" << endl;
-	data.compareTracks(tracks);
+		Tracking teste;
+		cout << "Rodando codigo: makeTracking()" << endl;
+		teste.makeTracking(data);
 
-	ofstream trackFile("tracks.txt");
-	for(int i = 0; i < tracks.size(); i++){
-		vector<PrPixelHit> hits = tracks[i].getHits();
-		trackFile << "(";
-		for(int j = 0; j < hits.size(); j++){
-			trackFile  << hits[j].id() << ", ";
+		vector<TrackS> tracks = teste.getTracks();
+		cout << "Rodando codigo: compareTracks(tracks)" << endl;
+		data.compareTracks(tracks);
+
+
+		ofstream trackFile("tracks.txt");
+		for(int i = 0; i < tracks.size(); i++){
+			vector<PrPixelHit> hits = tracks[i].getHits();
+			trackFile << "(";
+			for(int j = 0; j < hits.size(); j++){
+				trackFile  << hits[j].id() << ", ";
+			}
+			trackFile << ")" << endl;
 		}
-		trackFile << ")" << endl;
 	}
-
+	//close the log file
+	log.close();
 	return 0;
 }
