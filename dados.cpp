@@ -130,6 +130,10 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
 	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
 
+	log << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	log << "Total de tracks reconstrutívies long: " << countLong << endl;
+	log << "Total de tracks formadas: " <<  tracks.size() << endl;
+ 
 	/*variables*/
 	int goodTracks = 0;
 	int fakeTracks = 0;
