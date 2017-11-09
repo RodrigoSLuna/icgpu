@@ -12,7 +12,27 @@ extern "C"
 
 /*compare if two hits are common*/
 bool Tracking::compareHits(PrPixelHit one, PrPixelHit two){
-	if (one.n_id() == two.n_id()) return true;
+	//cout << "modulo de um hit : " << one.module() << endl;
+	//if(one.module() == two.module()){ cout << "nao estao no mesmo modulo" << endl; exit (EXIT_FAILURE); }
+        if (one.id() == two.id()) return true;
+	//if ((one.x() == two.x()) && (one.y() == two.y()) && (one.z() == two.z())) return true;
+	return false;
+}
+
+/*compare if two hits are common*/
+bool Tracking::compareHits(TrackSegment one, TrackSegment two){
+	PrPixelHit one_one =  one.getFirstHit();
+	PrPixelHit one_two = one.getSecondHit();
+	PrPixelHit two_one = two.getFirstHit();
+	PrPixelHit two_two = two.getSecondHit();
+	if (one_one.id() == two_one.id()) { cout << one_one.id() << ", "<< two_one.id() << endl; 
+            /*cout << "entrei aqui 1" << endl;*/ return true;}
+	if (one_one.id() == two_two.id()){ 
+            /*cout << "entrei aqui 2" << endl;*/ return true;}
+	if (one_two.id() == two_one.id()){
+            /*cout << "entrei aqui 3" << endl;*/ return true;}
+	if (one_two.id() == two_two.id()){
+            /*cout << "entrei aqui  4" << endl;*/ return true;}
 	//if ((one.x() == two.x()) && (one.y() == two.y()) && (one.z() == two.z())) return true;
 	return false;
 }
@@ -32,18 +52,34 @@ bool Tracking::compareBreakingAngle(float angle){
 
 /*compare if two segments can be neighbors seeing the status*/
 bool Tracking::compareStatus(int status_one, int status_two){
-	if(status_two == (status_one-1)) return true;
-	return false;
+	//cout << "status one: " << status_one << " e status two: "<< status_two << endl;
+        if(status_two == (status_one-1)) return true;
+	if(status_one == (status_two-1)) return true;
+        return false;
 }
 
 /*escolhe o menor ângulo e retorna o seu índice*/
-int Tracking::chooseBestAngle(vector<TrackS> trackAux){
-	float angle = trackAux[0].getLastAngle();
-	int indice = 0;
+int Tracking::chooseBestAngle(vector<TrackS> trackAux, float a, float b){
+	//float angle = trackAux[0].getLastAngle();
+	TrackSegment segment = trackAux[0].getLastSeg();
+        PrPixelHit one_track = segment.getFirstHit();
+        //PrPixelHit two_track = segment.getSecondHit();
+
+        //equacao reta: ax+b = y
+        //float y = (one_track.x() - two_track.x())/(one_track.y() - two_track.y());
+        float y = b+ a*one_track.x();
+        int indice = 0;
+        float difference = (one_track.y() - y)*(one_track.y() - y);
 	for(int iangle = 1; iangle < (int) trackAux.size(); iangle++){
-		if(trackAux[iangle].getLastAngle() < angle){
-			angle = trackAux[iangle].getLastAngle();
-			indice = iangle;
+	       segment = trackAux[iangle].getLastSeg();
+               one_track = segment.getFirstHit();
+	      
+               y = b+ a*one_track.x();
+               float difference_aux = (one_track.y() - y)*(one_track.y() - y);
+               if(difference_aux < difference){
+			//angle = trackAux[iangle].getLastAngle();
+			difference = difference_aux;
+                        indice = iangle;
 		}
 	}
 	return indice;
@@ -53,13 +89,18 @@ int Tracking::chooseBestAngle(vector<TrackS> trackAux){
 bool Tracking::testSegment(TrackSegment one, TrackSegment two, vector<vector<PrPixelHit> > hits){
 	PrPixelHit hit_one =  one.getFirstHit();
 	PrPixelHit hit_two = two.getSecondHit();
-	bool  testHits = compareHits(hit_one, hit_two);
+	//bool  testHits = compareHits(hit_one, hit_two);
+	bool  testHits = compareHits(one, two);
+        if(!testHits) return false;
+        //cout << "resultado do compareHits: " << testHits << endl;
 	//bool testHit_one = compareHitUsed(hit_one);
 	//bool testHit_two = compareHitUsed(hit_two);
 	bool seg_status = compareStatus(one.getStatus(), two.getStatus());
+        if(!seg_status) return false;
 	//calculate angle
 	float angle = calculateAngle(one.getTx(), one.getTy(), two.getTx(), two.getTy());
 	bool breakingAngle = compareBreakingAngle(angle);
+        if(!breakingAngle) return false;
 	return (breakingAngle && testHits && seg_status);//  && testHit_one && testHit_two);
 }
 
@@ -93,11 +134,25 @@ void Tracking::makeTrack(vector<vector<TrackSegment> > tSegment, TrackS &track, 
 	int indice = 0;
 	int id = sensor_id;
 
+        TrackSegment track_reta = track.getLastSeg();
+        PrPixelHit one_track = track_reta.getFirstHit();
+        PrPixelHit two_track = track_reta.getSecondHit();
+
+       //equacao reta: ax+b = y
+       float a = (one_track.x() - two_track.x())/(one_track.y() - two_track.y());
+       float b_reta = one_track.y() - a*one_track.x();
+       //cout << "a : " << a << " ,b: " << b_reta << endl;
+
 	for(; id >= 0; id = id-2){
 		vector<TrackS> trackAux = combinationTrack(tSegment, track, id, hits);
-		indice = chooseBestAngle(trackAux);
+		indice = chooseBestAngle(trackAux, a, b_reta);
 		track = trackAux[indice];
 		//track.setLastSeg(trackAux[indice], track);
+		
+                track_reta = track.getLastSeg();
+                PrPixelHit last_hit = track_reta.getFirstHit();
+                a = (last_hit.x() - one_track.x())/(last_hit.y() - one_track.y());
+                b_reta = one_track.y() - a*one_track.x();
 	}
 }
 
@@ -116,7 +171,7 @@ vector<TrackSegment> Tracking::makeSimpleSegment(vector<PrPixelHit> nextHits, ve
 			float ty = (y_one - y_zero)/(z_one - z_zero);
 			//see the angle between the two hits
 			if(sqrt(tx*tx+ty*ty) <= ACCEPTANCE_ANGLE){
-                vector<PrPixelHit> tmp;
+                                vector<PrPixelHit> tmp;
 				//make segment object
 				tmp.push_back(currentHits[id_current]);
 				tmp.push_back(nextHits[id_next]);
@@ -155,7 +210,8 @@ void Tracking::forwardProcess(vector<TrackSegment>& currentSeg, vector<TrackSegm
 			//vector<PrPixelHit> tmpNext = nextSeg[id_next].getTrackSegment();
 			PrPixelHit hit_next = nextSeg[id_next].getFirstHit();
 			//PrPixelHit hit_next = takeHit(hit_next_id, hits);
-      if (!compareHits(hit_cur, hit_next)) continue;
+                        //if (!compareHits(hit_cur, hit_next)) continue;
+                        if(!compareHits(currentSeg[id_current], nextSeg[id_next])) continue;
 			//calculate the breaking angle and verify if the segments has one common hit
 			float angle = calculateAngle(tx_cur, ty_cur, tx_next, ty_next);
 			//verify if the angle and the hit it's ok
@@ -213,7 +269,7 @@ void *Tracking::backwardProcessParallel(void *arg){
 
 
   //  cout << "Thread ID : " << my_data->thread_id ;
-   cout << " Sensor : " << my_data->sensor_id << endl;
+  // cout << " Sensor : " << my_data->sensor_id << endl;
    
 
    TrackSegment aux;
@@ -222,12 +278,28 @@ void *Tracking::backwardProcessParallel(void *arg){
    vector<vector<TrackSegment> > tSegment = my_data->tSegment;
    TrackS &track = my_data->track;
    vector<vector<PrPixelHit> > hits = my_data ->hits;
+   TrackSegment track_reta = track.getLastSeg();
+   PrPixelHit one_track = track_reta.getFirstHit();
+   PrPixelHit two_track = track_reta.getSecondHit();
+
+   //cout << "modulo first hit: "<< one_track.module() << endl;
+   //cout << "modulo second hit: "<< two_track.module() << endl;
+
+   //equacao reta: ax+b = y
+   float a = (one_track.x() - two_track.x())/(one_track.y() - two_track.y());
+   float b_reta = one_track.y() - a*one_track.x();
+   //cout << "a : " << a << " ,b: " << b_reta << endl;
 
     Tracking b;
 	for(; id >= 0; id = id-2){
 		vector<TrackS> trackAux = b.combinationTrack(tSegment, track, id, hits);
-		indice = b.chooseBestAngle(trackAux);
+		indice = b.chooseBestAngle(trackAux, a, b_reta);
 		track = trackAux[indice];
+
+                track_reta = track.getLastSeg();
+                PrPixelHit last_hit = track_reta.getFirstHit();
+                a = (last_hit.x() - one_track.x())/(last_hit.y() - one_track.y());
+                b_reta = one_track.y() - a*one_track.x();
 		// vector<PrPixelHit> Thits = track.getHits();
 		// cout << "track: " << Thits.size() << endl;
 		// track.setLastSeg(trackAux[indice], track);
@@ -275,7 +347,7 @@ void Tracking::parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<
 				vector<PrPixelHit> aux = td[i].track.getHits();
 				cout << "TAMANHO: " << aux.size() << endl;
 				if(aux.size() <= 2){
-					cout << "entrei aqui" << endl;
+					//cout << "entrei aqui" << endl;
 					continue;
 				} 
 				// printTrack(track, i); i++;
@@ -290,21 +362,21 @@ void Tracking::parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<
 
 void Tracking::makeTracking(DataFile data){
 	/*time*/
-	clock_t tInicio, tFim, tDecorrido;
+	double start, finish, elapsed;
 	int no_sensors = data.getNoSensor();
 	vector<vector<PrPixelHit> > hits = data.getHits();
 
 	/*start counting time*/
-	tInicio = clock();
+	GET_TIME(start);
 	/*make segments*/
 	for(unsigned isen = 0; isen < no_sensors-2; isen++){
 		vector<TrackSegment> tmpSeg = makeSimpleSegment(hits[isen+2], hits[isen]);
 		tSegment.push_back(tmpSeg);
 	}
 	/*finish counting time*/
-	tDecorrido = clock() - tInicio;
-	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'makeSimpleSegment' function. " <<  endl;
-	
+	GET_TIME(finish);
+        elapsed = finish - start;
+	cout << elapsed << " seconds to 'makeSimpleSegment' function. " <<  endl;
 
 	//count the tothal of segments
 	int contSeg = 0;
@@ -315,24 +387,26 @@ void Tracking::makeTracking(DataFile data){
 
 	int i = 0;
 	/*start counting time*/
-	tInicio = clock();
-	/*increase the status*/
+	GET_TIME(start);
+        /*increase the status*/
 	for(int isen = 0; isen < (int) tSegment.size()-2; isen++){
 		//std::cout << tSegment[isen].size() << std::endl;
 		forwardProcess(tSegment[isen], tSegment[isen+2], hits);
 	}
 	/*finish counting time*/
-	tDecorrido = clock() - tInicio;
-	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'forwardProcess' function. " <<  endl;
+        GET_TIME(finish);
+        elapsed = finish - start;
+        cout << elapsed << " seconds to 'makeSimpleSegment' function. " <<  endl;
 
 	/*start counting time*/
-	tInicio = clock();
+	GET_TIME(start);
 	/*backward process*/
 	parallelTracking(tSegment, tracks, hits);
+        //backwardProcess(tSegment, tracks, hits);
 	/*finish counting time*/
-	tDecorrido = clock() - tInicio;
-	cout << (float)tDecorrido/CLOCKS_PER_SEC << " seconds to 'backwardProcess' function. " <<  endl;
-
+        GET_TIME(finish);
+        elapsed = finish - start;
+        cout << elapsed << " seconds to 'makeSimpleSegment' function. " <<  endl;
 }
 
 
