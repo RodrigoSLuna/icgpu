@@ -396,7 +396,7 @@ void Tracking::makeTracking(DataFile data){
 	/*finish counting time*/
         GET_TIME(finish);
         elapsed = finish - start;
-        cout << elapsed << " seconds to 'makeSimpleSegment' function. " <<  endl;
+        cout << elapsed << " seconds to 'forwardProcess' function. " <<  endl;
 
 	/*start counting time*/
 	GET_TIME(start);
@@ -406,7 +406,7 @@ void Tracking::makeTracking(DataFile data){
 	/*finish counting time*/
         GET_TIME(finish);
         elapsed = finish - start;
-        cout << elapsed << " seconds to 'makeSimpleSegment' function. " <<  endl;
+        cout << elapsed << " seconds to 'backwardProcess' function. " <<  endl;
 }
 
 
