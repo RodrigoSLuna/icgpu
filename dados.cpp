@@ -14,13 +14,16 @@
 
 using namespace std;
 
+// prepare data to use for the tracking
 void DataFile::prepareData(string fileName) {
 	/*opening file*/
-	ofstream dataFile("dados.txt");
+	//ofstream dataFile("dados.txt");
 	ofstream log("log.txt", ios_base::app | ios_base::out);
 
 	// ifstream ifs("0.json");
+	/*open file to read*/
 	ifstream ifs(fileName.c_str());
+	/*reading the json file*/
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
@@ -49,6 +52,7 @@ void DataFile::prepareData(string fileName) {
 	/*hit z*/
 	const Json::Value& z = obj["event"]["hit_z"];
 
+    /*constructing the hits and putting in the vector*/
 	int j = 0;
 	int number_hits = 0;
 	for(int n_hits = 0; n_hits < no_sensor; n_hits++){
@@ -57,33 +61,34 @@ void DataFile::prepareData(string fileName) {
 		for(; j < number_hits; j++){
 			PrPixelHit hit;
 			hit.setHit(id[j].asUInt(),
-		             x[j].asFloat(), y[j].asFloat(), z[j].asFloat(),
-		             0.0, 0.0,
-		             module_z[n_hits]);
+		        x[j].asFloat(), y[j].asFloat(), z[j].asFloat(),
+		        0.0, 0.0,
+		        module_z[n_hits]);
 			aux.push_back(hit);
 		}
 		hits.push_back(aux);
 	}
 
 	/*closing file*/
-	dataFile.close();
+	//dataFile.close();
 	log.close();
 }
 
+//prepare data to compare with the results of tracking
 void DataFile::prepareResults(string fileName){
 	/*opening file*/
-	ofstream dataFile("dados.txt");
+	ofstream dataFile("dados.txt", ios_base::app | ios_base::out);
 	// ifstream ifs("0.json");
+	/*open file to read*/
 	ifstream ifs(fileName.c_str());
+	/*reading the json file*/
 	Json::Reader reader;
 	Json::Value obj;
 	reader.parse(ifs, obj); // reader can also read strings
 
-	
+	/*getting information about the particles*/
 	const Json::Value& particles = obj["montecarlo"]["particles"];
-
-	// cout << particles[0][15] << endl;
-
+    /*getting the track of each particle*/
 	for(int particle = 0; particle < particles.size(); particle++){
 		vector<unsigned int> aux;
 		const Json::Value& ids = particles[particle][15];
@@ -91,9 +96,11 @@ void DataFile::prepareResults(string fileName){
 			aux.push_back(ids[id].asUInt());
 		}
 		id_results.push_back(aux);
+		/*information with the track is long or not*/
 		isLong.push_back(particles[particle][6].asUInt());
 	}
 
+    /*printing the informations on a file*/
 	for(int i = 0; i < id_results.size(); i++){
 		vector<unsigned int> aux = id_results[i];
 		for(int j = 0; j < aux.size(); j++)
@@ -101,11 +108,13 @@ void DataFile::prepareResults(string fileName){
 		dataFile << endl;
 	}
 
+    /*total number of tracks*/
     cout << "total tracks: " << id_results.size() << endl;
 	/*closing file*/
 	dataFile.close();
 }
 
+/*compare the rebuilt tracks with the tracks of the event*/
 void DataFile::compareTracks(vector<TrackS> tracks){
 	/*opening file*/
 	ofstream goodTrack("good.txt"); //good tracks
@@ -235,10 +244,10 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 
 }
 
-int DataFile::getNoSensor() {return no_sensor;}
-int DataFile::getNoHit() {return no_hits;}
-vector<float> DataFile::getModule() {return module_z;}
-vector<int> DataFile::getNoHitsSensor() {return no_hits_sensor;}
-vector<vector<PrPixelHit> > DataFile::getHits() {return hits;}
-vector<PrPixelHit> DataFile::getHitsSensor(int i) {return hits[i];}
-vector<vector<unsigned int> > DataFile::getResult() {return id_results;}
+int DataFile::getNoSensor() {return no_sensor;} /*get number of sensors*/
+int DataFile::getNoHit() {return no_hits;} /*get number of hits*/
+vector<float> DataFile::getModule() {return module_z;} /*get the Z modules*/
+vector<int> DataFile::getNoHitsSensor() {return no_hits_sensor;} /*get the number of hits by sensor*/
+vector<vector<PrPixelHit> > DataFile::getHits() {return hits;} /*get all hits of all sensors*/
+vector<PrPixelHit> DataFile::getHitsSensor(int i) {return hits[i];} /*get hits of i sensor*/
+vector<vector<unsigned int> > DataFile::getResult() {return id_results;} /*get the tracks of the event*/
