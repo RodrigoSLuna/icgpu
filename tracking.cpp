@@ -273,7 +273,7 @@ void *Tracking::backwardProcessParallel(void *arg){
 	/*making the combination track and choosing the best combination*/
 	Tracking obj;
 	for(; id >= 0; id = id-2){
-		vector<TrackS> trackAux = b.combinationTrack(tSegment, track, id, hits);
+		vector<TrackS> trackAux = obj.combinationTrack(tSegment, track, id, hits);
 		indice = obj.chooseBestTrack(trackAux, a, b_reta);
 		track = trackAux[indice];
 
