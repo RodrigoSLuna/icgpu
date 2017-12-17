@@ -114,6 +114,115 @@ void DataFile::prepareResults(string fileName){
 	dataFile.close();
 }
 
+void DataFile::compareGood(vector<TrackS> tracks){
+	/*opening file*/
+	ofstream goodTrack("good.txt"); //good tracks
+	ofstream fakeTrack("fake.txt"); //fake tracks
+	ofstream cloneTrack("clone.txt"); //clone tracks
+	ofstream angulosTrack("angulos.txt"); 
+	ofstream log("log.txt", ios_base::app | ios_base::out);
+
+    /*put 1 if the track if rebuilt*/
+	int visitedTracks[id_results.size()];
+	for(int i = 0; i < id_results.size(); i++)
+		visitedTracks[i] = 0;
+
+
+    int countLong = 0;
+    for(int i = 0; i < isLong.size(); i++){
+    	// cout << isLong[i] << " ";
+        if(isLong[i]) countLong++;
+    }
+
+    /*verify if the track was used*/
+    int isUsed[tracks.size()];
+    for(int i = 0; i < tracks.size(); i++) isUsed[i] = 0;
+
+    cout << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
+	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
+
+    log << "Numeros esperados: " << endl;
+	log << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	log << "Total de tracks reconstrutívies long: " << countLong << endl;
+	log << "Total de tracks formadas: " <<  tracks.size() << endl;
+ 
+	/*variables*/
+	int goodTracks = 0;
+	int fakeTracks = 0;
+	int cloneTracks = 0;
+	int longTracks = 0;
+	int entrei = 0;
+
+	/*comparing formed tracks with original tracks*/
+	for(int track = 0; track < tracks.size(); track++){
+		vector<PrPixelHit> hits = tracks[track].getHits();
+		for(int i = 0; i < id_results.size(); i++){
+			int qtdHits = 0;
+			for(int comp = 0; comp < hits.size(); comp++){
+				for(int j = 0; j < id_results[i].size(); j++){
+					// cout << "j: " << j << endl;
+					if(hits[comp].id() == id_results[i][j]){ 
+						// cout << track << " "<< i << " "<< j << endl;
+						// cout << "reconstruida: " << hits[comp].id() << ", verdadeira: " << id_results[i][j] << endl;
+						qtdHits++; break;
+					}
+				}
+			}
+			// if(qtdHits >= 3){ cout << "qtd de hits iguais: " << qtdHits << " qtd total: " << hits.size() << endl; exit(0);}
+			if(qtdHits == 0) continue;
+			else{
+				float per = (float) qtdHits/hits.size();
+				// cout << "percentual: " << per << endl;
+				if(per >= 0.6){
+					if(!visitedTracks[i]){
+						visitedTracks[i]++;
+						goodTracks++;
+						goodTrack << goodTracks << ":";
+						for(int k = hits.size()-1; k>= 0; k--) 
+							goodTrack << hits[k].id() << ", ";
+						goodTrack << endl;
+						if(isLong[i]){
+							longTracks++;
+							angulosTrack << tracks[track].getLastAngle() << endl;
+						}
+					}
+					else{
+						visitedTracks[i]++;
+						cloneTracks++;
+						cloneTrack << cloneTracks << ":";
+						for(int k = hits.size()-1; k>= 0; k--) 
+							cloneTrack << hits[k].id() << ", ";
+						cloneTrack << endl;
+					}
+				}
+				else{
+					fakeTracks++;
+					fakeTrack << fakeTracks << ":";
+					for(int m = hits.size()-1; m>= 0; m--) 
+						fakeTrack << hits[m].id() << ", ";
+					fakeTrack << endl;
+				}
+			}
+		}
+	}
+	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
+	cout << "Total de tracks fakes: " <<  fakeTracks << endl;
+	cout << "Total de tracks clones: " << cloneTracks << endl;
+	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
+	cout << "entrei " << entrei << " vezes na comparação" << endl;
+
+	/*
+	loop sobre as tracks reconstruidas
+		loop sobre as tracks verdadeiras
+			enquanto tiver hits da reta reconstruida para serem comparados
+				loop sobre cada hit de cada track verdadeira
+			verifica se é good ou clone; se for, break
+		se não for good, nem clone, é fake
+	*/
+
+}
+
 /*compare the rebuilt tracks with the tracks of the event*/
 void DataFile::compareTracks(vector<TrackS> tracks){
 	/*opening file*/
@@ -139,7 +248,7 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
 	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
 
-        log << "Numeros esperados: " << endl;
+    log << "Numeros esperados: " << endl;
 	log << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
 	log << "Total de tracks reconstrutívies long: " << countLong << endl;
 	log << "Total de tracks formadas: " <<  tracks.size() << endl;
