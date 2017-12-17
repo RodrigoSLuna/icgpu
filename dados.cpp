@@ -212,6 +212,20 @@ void DataFile::compareGood(vector<TrackS> tracks){
 	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
 	cout << "entrei " << entrei << " vezes na comparação" << endl;
 
+	/*printing on file*/
+    log << "Numeros encontrados: " << endl;
+	log << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
+	log << "Total de tracks fakes: " <<  fakeTracks << endl;
+	log << "Total de tracks clones: " << cloneTracks << endl;
+	log << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
+
+	/*closing file*/
+	goodTrack.close();
+	fakeTrack.close();
+	cloneTrack.close();
+	angulosTrack.close();
+	log.close();
+
 	/*
 	loop sobre as tracks reconstruidas
 		loop sobre as tracks verdadeiras
