@@ -152,10 +152,14 @@ void DataFile::compareGood(vector<TrackS> tracks){
 	int fakeTracks = 0;
 	int cloneTracks = 0;
 	int longTracks = 0;
-	int entrei = 0;
+	int isGood = 0;
+
+	int qtdTracks = 0;
 
 	/*comparing formed tracks with original tracks*/
 	for(int track = 0; track < tracks.size(); track++){
+		// qtdTracks++;
+
 		vector<PrPixelHit> hits = tracks[track].getHits();
 		for(int i = 0; i < id_results.size(); i++){
 			int qtdHits = 0;
@@ -172,9 +176,15 @@ void DataFile::compareGood(vector<TrackS> tracks){
 			// if(qtdHits >= 3){ cout << "qtd de hits iguais: " << qtdHits << " qtd total: " << hits.size() << endl; exit(0);}
 			if(qtdHits == 0) continue;
 			else{
-				float per = (float) qtdHits/hits.size();
-				// cout << "percentual: " << per << endl;
+				// float per = (float) qtdHits/(float)id_results[i].size();
+				float per =  (float)qtdHits/(float)hits.size();
+				cout << qtdHits << " " << hits.size() << endl;
+				cout << "percentual: " << per << endl;
 				if(per >= 0.6){
+					qtdTracks++;
+					cout << "entrei aqui: " << track << endl; //exit(0);
+
+					isGood = 1;
 					if(!visitedTracks[i]){
 						visitedTracks[i]++;
 						goodTracks++;
@@ -196,21 +206,29 @@ void DataFile::compareGood(vector<TrackS> tracks){
 						cloneTrack << endl;
 					}
 				}
-				else{
-					fakeTracks++;
-					fakeTrack << fakeTracks << ":";
-					for(int m = hits.size()-1; m>= 0; m--) 
-						fakeTrack << hits[m].id() << ", ";
-					fakeTrack << endl;
-				}
 			}
 		}
+		if(isGood == 0){
+			// cout << "percentual: " << per << "track: " << track << endl;
+			// exit(0);
+			fakeTracks++;
+			fakeTrack << fakeTracks << ":";
+			for(int m = hits.size()-1; m>= 0; m--) 
+				fakeTrack << hits[m].id() << ", ";
+			fakeTrack << endl;
+		}
+		else isGood = 0;
 	}
+
+
+
+	cout << "QUANTIDADE DE TRACKS VISTAS EM GOOD: " << qtdTracks << endl;	
+
+
 	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
 	cout << "Total de tracks fakes: " <<  fakeTracks << endl;
 	cout << "Total de tracks clones: " << cloneTracks << endl;
 	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
-	cout << "entrei " << entrei << " vezes na comparação" << endl;
 
 	/*printing on file*/
     log << "Numeros encontrados: " << endl;
