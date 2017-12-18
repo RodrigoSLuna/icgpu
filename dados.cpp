@@ -158,33 +158,30 @@ void DataFile::compareGood(vector<TrackS> tracks){
 
 	/*comparing formed tracks with original tracks*/
 	for(int track = 0; track < tracks.size(); track++){
-		// qtdTracks++;
-
 		vector<PrPixelHit> hits = tracks[track].getHits();
+		/*loop over the original tracks*/
 		for(int i = 0; i < id_results.size(); i++){
 			int qtdHits = 0;
+			/*loop over the hits of the formed tracks*/
 			for(int comp = 0; comp < hits.size(); comp++){
+				/*loop over the hits of the original tracks*/
 				for(int j = 0; j < id_results[i].size(); j++){
-					// cout << "j: " << j << endl;
 					if(hits[comp].id() == id_results[i][j]){ 
-						// cout << track << " "<< i << " "<< j << endl;
-						// cout << "reconstruida: " << hits[comp].id() << ", verdadeira: " << id_results[i][j] << endl;
 						qtdHits++; break;
 					}
 				}
 			}
-			// if(qtdHits >= 3){ cout << "qtd de hits iguais: " << qtdHits << " qtd total: " << hits.size() << endl; exit(0);}
-			if(qtdHits == 0) continue;
-			else{
-				// float per = (float) qtdHits/(float)id_results[i].size();
+			if(qtdHits == 0) continue; // the loop didn't find hits in this track
+			else if(isGood == 0){ // if the loop didn't find a track
 				float per =  (float)qtdHits/(float)hits.size();
 				cout << qtdHits << " " << hits.size() << endl;
 				cout << "percentual: " << per << endl;
+				/*see if it is good or clone track*/
 				if(per >= 0.6){
 					qtdTracks++;
 					cout << "entrei aqui: " << track << endl; //exit(0);
-
 					isGood = 1;
+					/*the track is good if never visited*/
 					if(!visitedTracks[i]){
 						visitedTracks[i]++;
 						goodTracks++;
@@ -197,6 +194,7 @@ void DataFile::compareGood(vector<TrackS> tracks){
 							angulosTrack << tracks[track].getLastAngle() << endl;
 						}
 					}
+					/*otherwise, it is clone track*/
 					else{
 						visitedTracks[i]++;
 						cloneTracks++;
@@ -207,7 +205,9 @@ void DataFile::compareGood(vector<TrackS> tracks){
 					}
 				}
 			}
+			else break; // if the loop found a track, break the loop
 		}
+		/*if the track is not a good or clone track, the track is a fake track*/
 		if(isGood == 0){
 			// cout << "percentual: " << per << "track: " << track << endl;
 			// exit(0);
