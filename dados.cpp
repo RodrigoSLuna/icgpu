@@ -177,7 +177,7 @@ void DataFile::compareGood(vector<TrackS> tracks){
 				cout << qtdHits << " " << hits.size() << endl;
 				cout << "percentual: " << per << endl;
 				/*see if it is good or clone track*/
-				if(per >= 0.6){
+				if(per >= 0.6){ // mudar para 2/3
 					qtdTracks++;
 					cout << "entrei aqui: " << track << endl; //exit(0);
 					isGood = 1;
@@ -252,6 +252,11 @@ void DataFile::compareGood(vector<TrackS> tracks){
 			verifica se é good ou clone; se for, break
 		se não for good, nem clone, é fake
 	*/
+
+
+	// fazer outra funcao para verificar good tracks - loop sobre verdadeiras, depois sobre reconstruidas
+	// fazer uma distribuição do acceptance angle das good tracks, usando acceptance angle igual a PI (ou tirar a comparação)
+	// aumentar o breaking angle para 0.2
 
 }
 
