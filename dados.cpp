@@ -177,7 +177,7 @@ void DataFile::compareGood(vector<TrackS> tracks){
 				cout << qtdHits << " " << hits.size() << endl;
 				cout << "percentual: " << per << endl;
 				/*see if it is good or clone track*/
-				if(per >= 0.6){ // mudar para 2/3
+				if(per >= (2/3)){ // mudar para 2/3
 					qtdTracks++;
 					cout << "entrei aqui: " << track << endl; //exit(0);
 					isGood = 1;
@@ -258,6 +258,130 @@ void DataFile::compareGood(vector<TrackS> tracks){
 	// fazer uma distribuição do acceptance angle das good tracks, usando acceptance angle igual a PI (ou tirar a comparação)
 	// aumentar o breaking angle para 0.2
 
+}
+
+void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
+	/*opening file*/
+	ofstream goodTrack("good.txt"); //good tracks
+	ofstream fakeTrack("fake.txt"); //fake tracks
+	ofstream cloneTrack("clone.txt"); //clone tracks
+	ofstream angulosTrack("angulos.txt"); 
+	ofstream log("log.txt", ios_base::app | ios_base::out);
+
+	int size_formedTrack = 0;
+
+    /*put 1 if the track if rebuilt*/
+	int visitedTracks[id_results.size()];
+	for(int i = 0; i < id_results.size(); i++)
+		visitedTracks[i] = 0;
+
+
+    int countLong = 0;
+    for(int i = 0; i < isLong.size(); i++){
+    	// cout << isLong[i] << " ";
+        if(isLong[i]) countLong++;
+    }
+
+    /*verify if the track was used*/
+    // int isUsed[tracks.size()];
+    // for(int i = 0; i < tracks.size(); i++) isUsed[i] = 0;
+
+    /*variables*/
+	int goodTracks = 0;
+	int fakeTracks = 0;
+	int cloneTracks = 0;
+	int longTracks = 0;
+	int isGood = 0;
+
+	int qtdTracks = 0;
+
+	cout << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
+	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
+
+    log << "Numeros esperados: " << endl;
+	log << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
+	log << "Total de tracks reconstrutívies long: " << countLong << endl;
+	log << "Total de tracks formadas: " <<  tracks.size() << endl;
+
+    /*comparing original tracks with formed tracks*/
+    /*loop over the original tracks*/
+	for(int track = 0; track < id_results.size(); track++){
+		vector<unsigned  int> hits = id_results[track];
+		/*loop over the formed tracks*/
+		for(int i = 0; i < tracks.size(); i++){
+			int qtdHits = 0;
+			vector<PrPixelHit> id_formed = tracks[i].getHits();
+			size_formedTrack = id_formed.size();
+			/*loop over the hits of the original tracks*/
+			for(int comp = 0; comp < hits.size(); comp++){
+				/*loop over the hits of the formed tracks*/
+				for(int j = 0; j < id_formed.size(); j++){
+					if(hits[comp] == id_formed[j].id()){ 
+						qtdHits++; break;
+					}
+				}
+			}
+			if(qtdHits == 0) continue; // the loop didn't find hits in this track
+			else if(isGood == 0){ // if the loop didn't find a track
+				float per =  (float)qtdHits/(float)size_formedTrack;
+				cout << qtdHits << " " << size_formedTrack << endl;
+				cout << "percentual: " << per << endl;
+				/*see if it is good or clone track*/
+				if(per >= (2/3)){ // mudar para 2/3
+					qtdTracks++;
+					cout << "entrei aqui: " << track << endl; //exit(0);
+					isGood = 1;
+					/*the track is good if never visited*/
+					if(!visitedTracks[i]){
+						visitedTracks[i]++;
+						goodTracks++;
+						goodTrack << goodTracks << ":";
+						for(int k = size_formedTrack-1; k>= 0; k--) 
+							goodTrack << id_formed[k].id() << ", ";
+						goodTrack << endl;
+						if(isLong[track]){
+							longTracks++;
+							angulosTrack << tracks[i].getLastAngle() << endl;
+						}
+					}
+					/*otherwise, it is clone track*/
+					// else{
+					// 	visitedTracks[i]++;
+					// 	cloneTracks++;
+					// 	cloneTrack << cloneTracks << ":";
+					// 	for(int k = hits.size()-1; k>= 0; k--) 
+					// 		cloneTrack << hits[k].id() << ", ";
+					// 	cloneTrack << endl;
+					// }
+				}
+			}
+			else if(isGood == 1) break; // if the loop found a track, break the loop
+		}
+		isGood = 0;
+	}
+
+	cout << "QUANTIDADE DE TRACKS VISTAS EM GOOD: " << qtdTracks << endl;	
+
+
+	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
+	cout << "Total de tracks fakes: " <<  fakeTracks << endl;
+	cout << "Total de tracks clones: " << cloneTracks << endl;
+	cout << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
+
+	/*printing on file*/
+    log << "Numeros encontrados: " << endl;
+	log << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
+	log << "Total de tracks fakes: " <<  fakeTracks << endl;
+	log << "Total de tracks clones: " << cloneTracks << endl;
+	log << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
+
+	/*closing file*/
+	goodTrack.close();
+	fakeTrack.close();
+	cloneTrack.close();
+	angulosTrack.close();
+	log.close();
 }
 
 /*compare the rebuilt tracks with the tracks of the event*/

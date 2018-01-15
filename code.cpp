@@ -26,8 +26,8 @@ int main(){
 
     /*adding the file names*/
     vector<string> s;
-	s.push_back("events/1.json"); //s.push_back("events/1.json"); s.push_back("events/2.json");
-	//s.push_back("events/3.json"); s.push_back("events/4.json"); s.push_back("events/5.json"); 
+	s.push_back("events/0.json"); //s.push_back("events/1.json"); s.push_back("events/2.json");
+	// /*s.push_back("events/3.json"); s.push_back("events/4.json"); */ s.push_back("events/5.json"); 
 	for(int file = 0; file < s.size(); file++){
 		DataFile data;
 		cout << "Rodando codigo: prepareData()" << endl;
@@ -45,8 +45,8 @@ int main(){
 
 		vector<TrackS> tracks = teste.getTracks();
 		cout << "Rodando codigo: compareTracks(tracks)" << endl;
-		// data.compareTracks(tracks);
-		data.compareGood(tracks);
+		data.compareGoodNewVersion(tracks);
+		// data.compareGood(tracks);
 
 
 		ofstream trackFile("tracks.txt");
