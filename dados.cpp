@@ -271,8 +271,8 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 	int size_formedTrack = 0;
 
     /*put 1 if the track if rebuilt*/
-	int visitedTracks[id_results.size()];
-	for(int i = 0; i < id_results.size(); i++)
+	int visitedTracks[tracks.size()];
+	for(int i = 0; i < tracks.size(); i++)
 		visitedTracks[i] = 0;
 
 
@@ -332,7 +332,7 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 					qtdTracks++;
 					cout << "entrei aqui: " << track << endl; //exit(0);
 					isGood = 1;
-					/*the track is good if never visited*/
+					//the track is good if never visited
 					if(!visitedTracks[i]){
 						visitedTracks[i]++;
 						goodTracks++;
@@ -345,7 +345,7 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 							angulosTrack << tracks[i].getLastAngle() << endl;
 						}
 					}
-					/*otherwise, it is clone track*/
+					//otherwise, it is clone track
 					// else{
 					// 	visitedTracks[i]++;
 					// 	cloneTracks++;
