@@ -26,6 +26,7 @@ class DataFile{
     vector<vector<unsigned int> > getResult(); // get the tracks of the event
     void compareTracks(vector<TrackS> tracks); // compare the rebuilt tracks with the tracks of the event
     void compareGood(vector<TrackS> tracks);
+    void compareGoodNewVersion(vector<TrackS> tracks);
 
   private:
     int no_sensor; //number of sensors
