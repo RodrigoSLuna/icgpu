@@ -172,7 +172,7 @@ vector<TrackSegment> Tracking::makeSimpleSegment(vector<PrPixelHit> nextHits, ve
 			float tx = (x_one - x_zero)/(z_one - z_zero);
 			float ty = (y_one - y_zero)/(z_one - z_zero);
 			//see the angle between the two hits
-			if(sqrt(tx*tx+ty*ty) <= ACCEPTANCE_ANGLE){
+			if(sqrt(tx*tx+ty*ty) <= ACCEPTANCE_ANGLE){ // && >= PI/2??
                 vector<PrPixelHit> tmp;
 				//make segment object
 				tmp.push_back(currentHits[id_current]);
@@ -328,7 +328,7 @@ void Tracking::parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<
 			pthread_join(threads[i], &status);
 			if (status != 0){
 				vector<PrPixelHit> aux = td[i].track.getHits();
-				cout << "TAMANHO: " << aux.size() << endl;
+				// cout << "TAMANHO: " << aux.size() << endl;
 				if(aux.size() <= 2){
 					//cout << "entrei aqui" << endl;
 					continue;
@@ -386,7 +386,7 @@ void Tracking::makeTracking(DataFile data){
 	GET_TIME(start);
 	/*backward process*/
 	parallelTracking(tSegment, tracks, hits);
-    //backwardProcess(tSegment, tracks, hits);
+    // backwardProcess(tSegment, tracks, hits);
 	/*finish counting time*/
     GET_TIME(finish);
     elapsed = finish - start;

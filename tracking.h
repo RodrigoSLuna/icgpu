@@ -24,8 +24,8 @@ using namespace std;
 // defining constant variables
 const int INITIAL_STATUS = 1;
 const int DIFFERENCE_SENSOR = 3;
-const float BREAKING_ANGLE = 0.01;
-//const float BREAKING_ANGLE = M_PI;
+// const float BREAKING_ANGLE = 0.01; // aumentar para 0.02
+const float BREAKING_ANGLE = 0.02;
 const float ACCEPTANCE_ANGLE = 0.2;
 //const float ACCEPTANCE_ANGLE = M_PI;
 
