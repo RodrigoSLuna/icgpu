@@ -6,10 +6,11 @@
 #include <fstream>
 #include <iostream>
 #include "dados.h"
+#include <set>
 // #include "structs.h"
 // #include "PrPixelHit.h"
 #include <json/json.h>
-
+#include <iomanip>
 //para compilar: g++ -I /usr/include/jsoncpp/ dados.cpp -ljsoncpp
 
 using namespace std;
@@ -19,7 +20,7 @@ void DataFile::prepareData(string fileName) {
 	/*opening file*/
 	//ofstream dataFile("dados.txt");
 	ofstream log("log.txt", ios_base::app | ios_base::out);
-
+	ofstream hits_info("hits_info.txt", ios_base:: app | ios_base :: out);
 	// ifstream ifs("0.json");
 	/*open file to read*/
 	ifstream ifs(fileName.c_str());
@@ -31,6 +32,43 @@ void DataFile::prepareData(string fileName) {
 	/*printing the file name*/
 	log << "arquivo " << fileName << endl;
  	
+	
+
+	/*
+  	Building the vector with only hits thats belongs a LONG particle	
+ 	*/
+	
+	const Json::Value& particles = obj["montecarlo"]["particles"];
+	//data_structure that has all the Longs particles ids.
+	/*
+ * 		Possivelmente o algoritmo esta construindo a MESMA track long! e nao encontrando TODAS!
+ * 	*/	
+	set<int> cnj;
+	int auxLL = 1;
+ 
+	for(int particle = 0; particle < particles.size();particle++){
+		int tipo = particles[particle][6].asUInt();
+		//If the id of particile is long, so insert in cnj  
+		
+		if( tipo == 1){
+			//printf("%d\n",particle);	
+	
+			const Json::Value& ids = particles[particle][15];
+			if( /*auxLL == 55*/ particle == 427  ){
+			//	hits_info << "**********************" << endl;
+			//	hits_info<< "Particle Long value: " << auxLL << endl;
+				for(int id = 0;id<ids.size();id++){
+			//		hits_info << "id: "<< ids[id].asUInt() << endl;
+					
+					cnj.insert(ids[id].asUInt());
+				}
+			}
+			auxLL++;
+		}
+	}
+	
+
+
 
 	/*number of sensors from 0.json */
 	no_sensor = obj["event"]["number_of_sensors"].asInt();
@@ -59,16 +97,28 @@ void DataFile::prepareData(string fileName) {
 		number_hits += no_hits_sensor[n_hits];
 		vector<PrPixelHit> aux;
 		for(; j < number_hits; j++){
+			// If the particle dons't belongs the cnj of LONGS, just continue
+
+			//if(cnj.find(id[j].asUInt() ) == cnj.end() ) continue; 
 			PrPixelHit hit;
 			hit.setHit(id[j].asUInt(),
 		        x[j].asFloat(), y[j].asFloat(), z[j].asFloat(),
 		        0.0, 0.0,
 		        module_z[n_hits]);
 			aux.push_back(hit);
+	
+		//	hits_info << "Sensor: " << n_hits  << endl;
+		//	hits_info << "ID: "<< id[j].asUInt() << endl;
+		//	hits_info << "X: " << std::setprecision(4) << x[j].asFloat();
+
+		//	hits_info << "  Y: " << std::setprecision(4) << y[j].asFloat();
+
+		//	hits_info << "  Z: " << std::setprecision(4) << z[j].asFloat() << endl << endl;
+	
 		}
 		hits.push_back(aux);
 	}
-
+	printf("QUANTIDADE DE HITS: %d\n",hits.size());
 	/*closing file*/
 	//dataFile.close();
 	log.close();
@@ -77,7 +127,7 @@ void DataFile::prepareData(string fileName) {
 //prepare data to compare with the results of tracking
 void DataFile::prepareResults(string fileName){
 	/*opening file*/
-	ofstream dataFile("dados.txt", ios_base::app | ios_base::out);
+//	ofstream dataFile("dados.txt", ios_base::app | ios_base::out);
 	// ifstream ifs("0.json");
 	/*open file to read*/
 	ifstream ifs(fileName.c_str());
@@ -95,27 +145,30 @@ void DataFile::prepareResults(string fileName){
 		for(int id = 0; id < ids.size(); id++){
 			aux.push_back(ids[id].asUInt());
 		}
+		
+		
 		id_results.push_back(aux);
 		/*information with the track is long or not*/
 		isLong.push_back(particles[particle][6].asUInt());
 	}
 
     /*printing the informations on a file*/
-	for(int i = 0; i < id_results.size(); i++){
-		vector<unsigned int> aux = id_results[i];
-		for(int j = 0; j < aux.size(); j++)
-			dataFile << id_results[i][j] << " ";
-		dataFile << endl;
-	}
+//	for(int i = 0; i < id_results.size(); i++){
+//		vector<unsigned int> aux = id_results[i];
+//		for(int j = 0; j < aux.size(); j++)
+//			dataFile << id_results[i][j] << " ";
+//		dataFile << endl;
+//	}
 
     /*total number of tracks*/
     cout << "total tracks: " << id_results.size() << endl;
 	/*closing file*/
-	dataFile.close();
+//	dataFile.close();
 }
 
-void DataFile::compareGood(vector<TrackS> tracks){
+void DataFile::compareGood(vector<TrackS> &tracks){
 	/*opening file*/
+	
 	ofstream goodTrack("good.txt"); //good tracks
 	ofstream fakeTrack("fake.txt"); //fake tracks
 	ofstream cloneTrack("clone.txt"); //clone tracks
@@ -140,13 +193,17 @@ void DataFile::compareGood(vector<TrackS> tracks){
 
     cout << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
 	cout << "Total de tracks reconstrutívies long: " << countLong << endl;
+	
 	cout << "Total de tracks formadas: " <<  tracks.size() << endl;
 
     log << "Numeros esperados: " << endl;
 	log << "Total de tracks reconstrutívies: " <<  id_results.size() << endl;
 	log << "Total de tracks reconstrutívies long: " << countLong << endl;
 	log << "Total de tracks formadas: " <<  tracks.size() << endl;
- 
+	 
+	/*Saving if the particle belongs to the long*/
+	
+
 	/*variables*/
 	int goodTracks = 0;
 	int fakeTracks = 0;
@@ -173,11 +230,11 @@ void DataFile::compareGood(vector<TrackS> tracks){
 			}
 			if(qtdHits == 0) continue; // the loop didn't find hits in this track
 			else if(isGood == 0){ // if the loop didn't find a track
-				float per =  (float)qtdHits/(float)hits.size();
+				double per =  (double)qtdHits/(double)hits.size();
 				cout << qtdHits << " " << hits.size() << endl;
 				cout << "percentual: " << per << endl;
-				/*see if it is good or clone track*/
-				if(per >= (2/3)){ // mudar para 2/3
+				/*see if it is good or clone track*/	
+				if(per >= (2.0/3.0)){ 
 					qtdTracks++;
 					cout << "entrei aqui: " << track << endl; //exit(0);
 					isGood = 1;
@@ -262,11 +319,13 @@ void DataFile::compareGood(vector<TrackS> tracks){
 
 void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 	/*opening file*/
-	ofstream goodTrack("good.txt"); //good tracks
-	ofstream fakeTrack("fake.txt"); //fake tracks
-	ofstream cloneTrack("clone.txt"); //clone tracks
-	ofstream angulosTrack("angulos.txt"); 
+//	ofstream goodTrack("good.txt"); //good tracks
+//	ofstream fakeTrack("fake.txt"); //fake tracks
+//	ofstream cloneTrack("clone.txt"); //clone tracks
+//	ofstream angulosTrack("angulos.txt"); 
 	ofstream log("log.txt", ios_base::app | ios_base::out);
+	
+
 
 	int size_formedTrack = 0;
 
@@ -306,6 +365,7 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 
     /*comparing original tracks with formed tracks*/
     /*loop over the original tracks*/
+	
 	for(int track = 0; track < id_results.size(); track++){
 		vector<unsigned  int> hits = id_results[track];
 		/*loop over the formed tracks*/
@@ -314,54 +374,57 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 			vector<PrPixelHit> id_formed = tracks[i].getHits();
 			size_formedTrack = id_formed.size();
 			/*loop over the hits of the original tracks*/
+			/*Complexidade O ( Hits.size() * id_formed.size() ) */
 			for(int comp = 0; comp < hits.size(); comp++){
 				/*loop over the hits of the formed tracks*/
 				for(int j = 0; j < id_formed.size(); j++){
 					if(hits[comp] == id_formed[j].id()){ 
-						qtdHits++; break;
+						qtdHits++; //break;
 					}
 				}
 			}
 			if(qtdHits == 0) continue; // the loop didn't find hits in this track
-			else if(isGood == 0){ // if the loop didn't find a track
-				float per =  (float)qtdHits/(float)size_formedTrack;
-				cout << qtdHits << " " << size_formedTrack << endl;
-				cout << "percentual: " << per << endl;
-				/*see if it is good or clone track*/
-				if(per >= (2/3)){ // mudar para 2/3
-					qtdTracks++;
-					cout << "entrei aqui: " << track << endl; //exit(0);
-					isGood = 1;
+			else if(isGood == 0 and 3*qtdHits >= 2*size_formedTrack ){ // if the loop didn't find a track
+
+//				cout <<"Quantidade de hits: " << qtdHits << " tamanho da track formada: " << size_formedTrack << endl;
+//				cout << "percentual: " << per << endl;
+				/*see if it is good or clone track*/		
+	//			qtdTracks++;
+//					cout << "entrei aqui: " << track << endl; //exit(0);
+					
+				isGood = 1;	
 					//the track is good if never visited
-					if(!visitedTracks[i]){
-						visitedTracks[i]++;
-						goodTracks++;
-						goodTrack << goodTracks << ":";
-						for(int k = size_formedTrack-1; k>= 0; k--) 
-							goodTrack << id_formed[k].id() << ", ";
-						goodTrack << endl;
-						if(isLong[track]){
-							longTracks++;
-							angulosTrack << tracks[i].getLastAngle() << endl;
-						}
+				if(!visitedTracks[i]){
+				//	printf("TRACK:%d\n",track);
+					visitedTracks[i]++;
+					goodTracks++;	
+//						goodTrack << goodTracks << ":";
+//						for(int k = size_formedTrack-1; k>= 0; k--) 
+//							goodTrack << id_formed[k].id() << ", ";
+//						goodTrack << endl;
+					if(isLong[track]){
+						printf("LONG:TRACK: %d\n",track);
+						longTracks++;
+//							angulosTrack << tracks[i].getLastAngle() << endl;
+				
 					}
-					//otherwise, it is clone track
-					// else{
-					// 	visitedTracks[i]++;
-					// 	cloneTracks++;
-					// 	cloneTrack << cloneTracks << ":";
-					// 	for(int k = hits.size()-1; k>= 0; k--) 
-					// 		cloneTrack << hits[k].id() << ", ";
-					// 	cloneTrack << endl;
-					// }
+				}
+				else{
+					cloneTracks++;
 				}
 			}
-			else if(isGood == 1) break; // if the loop found a track, break the loop
+			else if(isGood and 3*qtdHits >= 2*size_formedTrack){
+	//			if(isLong[track]) puts("Nao escolheu a LONG");
+				cloneTracks++;
+			}
+			else if(3*qtdHits < 2*size_formedTrack) fakeTracks++;
+							
 		}
+	
 		isGood = 0;
 	}
 
-	cout << "QUANTIDADE DE TRACKS VISTAS EM GOOD: " << qtdTracks << endl;	
+	cout << "QUANTIDADE DE TRACKS VISTAS EM GOOD: " << goodTracks << endl;	
 
 
 	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
@@ -376,21 +439,26 @@ void DataFile::compareGoodNewVersion(vector<TrackS> tracks){
 	log << "Total de tracks clones: " << cloneTracks << endl;
 	log << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
 
+	ofstream good("good.txt", ios_base::app | ios_base::out);
+	good << goodTracks << " " << id_results.size() << endl;
+	good.close();
+
+
 	/*closing file*/
-	goodTrack.close();
-	fakeTrack.close();
-	cloneTrack.close();
-	angulosTrack.close();
+//	goodTrack.close();
+//	fakeTrack.close();
+//	cloneTrack.close();
+//	angulosTrack.close();
 	log.close();
 }
 
 /*compare the rebuilt tracks with the tracks of the event*/
-void DataFile::compareTracks(vector<TrackS> tracks){
+void DataFile::compareTracks(vector<TrackS> &tracks){
 	/*opening file*/
-	ofstream goodTrack("good.txt"); //good tracks
-	ofstream fakeTrack("fake.txt"); //fake tracks
-	ofstream cloneTrack("clone.txt"); //clone tracks
-	ofstream angulosTrack("angulos.txt"); 
+//	ofstream goodTrack("good.txt"); //good tracks
+//	ofstream fakeTrack("fake.txt"); //fake tracks
+//	ofstream cloneTrack("clone.txt"); //clone tracks
+//	ofstream angulosTrack("angulos.txt"); 
 	ofstream log("log.txt", ios_base::app | ios_base::out);
 
 
@@ -444,7 +512,7 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 					if(good > 0){
 						// cout << good << endl;
 						trackUsada = 1;
-						float goodPer = (float) good/id_results[i].size();
+						double goodPer = (double) good/id_results[i].size();
 						// cout << goodPer << endl;
 						if(goodPer >= 0.6){
 							if(!visitedTracks[i]){
@@ -452,13 +520,13 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 								// cout << "real: indice: " << i << " contagem: " << visitedTracks[i] << endl;
 								goodTracks++;
 								// cout << goodPer << endl;
-								goodTrack << goodTracks << ":";
-								for(int k = hits.size()-1; k>= 0; k--) 
-									goodTrack << hits[k].id() << ", ";
-								goodTrack << endl;
+//								goodTrack << goodTracks << ":";
+//								for(int k = hits.size()-1; k>= 0; k--) 
+//									goodTrack << hits[k].id() << ", ";
+//								goodTrack << endl;
 								if(isLong[i]){
 									longTracks++;
-									angulosTrack << tracks[track].getLastAngle() << endl;
+//									angulosTrack << tracks[track].getLastAngle() << endl;
 									// cout << "long track: " << i << endl; 
 								}
 							}
@@ -467,19 +535,19 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 								// cout << "clone: indice: " << i << " contagem: " << visitedTracks[i] << endl;
 								cloneTracks++;
 								// cout << goodPer << endl;
-								cloneTrack << cloneTracks << ":";
-								for(int k = hits.size()-1; k>= 0; k--) 
-									cloneTrack << hits[k].id() << ", ";
-								cloneTrack << endl;
+//								cloneTrack << cloneTracks << ":";
+//								for(int k = hits.size()-1; k>= 0; k--) 
+//									cloneTrack << hits[k].id() << ", ";
+//								cloneTrack << endl;
 							}
 						}  
 						else{
 							// cout << goodPer << ", " << fakeTracks << endl;
 							fakeTracks++;
-							fakeTrack << fakeTracks << ":";
-							for(int m = hits.size()-1; m>= 0; m--) 
-								fakeTrack << hits[m].id() << ", ";
-							fakeTrack << endl;
+//							fakeTrack << fakeTracks << ":";
+//							for(int m = hits.size()-1; m>= 0; m--) 
+//								fakeTrack << hits[m].id() << ", ";
+//							fakeTrack << endl;
 						}
 						break;
 					}
@@ -491,6 +559,9 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 			hit--;
 		}
 	}
+
+	
+
 
 
 	cout << "Total de tracks reconstrutívies e reconstruídas: " <<  goodTracks << endl;
@@ -506,17 +577,17 @@ void DataFile::compareTracks(vector<TrackS> tracks){
 	log << "Total de tracks reconstrutívies e reconstruídas long: " << longTracks << endl;
 
 	/*closing file*/
-	goodTrack.close();
-	fakeTrack.close();
-	cloneTrack.close();
-	angulosTrack.close();
+//	goodTrack.close();
+//	fakeTrack.close();
+//	cloneTrack.close();
+//	angulosTrack.close();
 	log.close();
 
 }
 
 int DataFile::getNoSensor() {return no_sensor;} /*get number of sensors*/
 int DataFile::getNoHit() {return no_hits;} /*get number of hits*/
-vector<float> DataFile::getModule() {return module_z;} /*get the Z modules*/
+vector<double> DataFile::getModule() {return module_z;} /*get the Z modules*/
 vector<int> DataFile::getNoHitsSensor() {return no_hits_sensor;} /*get the number of hits by sensor*/
 vector<vector<PrPixelHit> > DataFile::getHits() {return hits;} /*get all hits of all sensors*/
 vector<PrPixelHit> DataFile::getHitsSensor(int i) {return hits[i];} /*get hits of i sensor*/

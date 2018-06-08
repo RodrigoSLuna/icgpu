@@ -1,0 +1,162 @@
+Particle : 1
+Check 1
+Particle : 2
+Check 1
+
+
+Particle : 3
+Check 0
+
+
+Particle : 4
+Check 1
+
+
+Particle : 5
+Check 1
+
+
+Particle : 6
+Check 1
+
+
+Particle : 7
+Check 1
+
+
+Particle : 8
+Check 1
+
+
+Particle : 9
+Check 1
+
+
+Particle : 10
+Check 1
+
+
+Particle : 11
+Check 1
+
+
+Particle : 12
+Check 1
+
+
+Particle : 13
+Check 1
+
+
+Particle : 14
+Check 1
+
+
+Particle : 15
+Check 0
+
+
+Particle : 16
+Check 1
+
+
+Particle : 17
+Check 0
+
+
+Particle : 18
+Check 0
+
+
+Particle : 19
+Check 1
+
+
+Particle : 20
+Check 0
+
+
+Particle : 21
+Check 1
+
+
+Particle : 22
+Check 1
+
+
+Particle : 23
+Check 1
+
+
+Particle : 24
+Check 1
+
+
+Particle : 25
+Check 1
+
+
+Particle : 26
+Check 1
+
+
+Particle : 27
+Check 1
+
+
+Particle : 28
+Check 1
+
+
+Particle : 29
+Check 1
+
+
+Particle : 30
+Check 1
+
+
+Particle : 31
+Check 1
+
+
+Particle : 32
+Check 0
+
+
+Particle : 33
+Check 1
+
+
+Particle : 34
+Check 1
+
+
+Particle : 35
+Check 1
+
+
+Particle : 36
+Check 1
+
+
+Particle : 37
+Check 1
+
+
+Particle : 38
+Check 1
+
+
+Particle : 39
+Check 1
+
+
+Particle : 40
+Check 1
+
+
+Particle : 41
+Check 1
+
+

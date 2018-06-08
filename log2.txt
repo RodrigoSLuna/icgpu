@@ -1,0 +1,399 @@
+2018-4-13
+arquivo events/0.json
+Particle Long value: 41
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 929
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 117
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-16
+arquivo events/1.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 431
+Total de tracks reconstrutívies long: 146
+Total de tracks formadas: 5164
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 140
+2018-4-16
+arquivo events/2.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 517
+Total de tracks reconstrutívies long: 156
+Total de tracks formadas: 6832
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 144
+2018-4-16
+arquivo events/3.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 523
+Total de tracks reconstrutívies long: 165
+Total de tracks formadas: 5480
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 153
+2018-4-16
+arquivo events/4.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 286
+Total de tracks reconstrutívies long: 107
+Total de tracks formadas: 2885
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 101
+2018-4-16
+arquivo events/5.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 175
+Total de tracks reconstrutívies long: 48
+Total de tracks formadas: 1115
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 46
+2018-4-16
+arquivo events/6.json
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 7
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 6
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 0
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 0
+Total de tracks clones: 21
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 21
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 0
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 0
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 0
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 0
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 0
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 0
+Total de tracks fakes: 0
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 0
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 929
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 117
+Total de tracks fakes: 19
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 809
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 97
+Total de tracks fakes: 24
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 41
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40
+2018-4-19
+arquivo events/1.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 431
+Total de tracks reconstrutívies long: 146
+Total de tracks formadas: 2773
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 350
+Total de tracks fakes: 71
+Total de tracks clones: 4
+Total de tracks reconstrutívies e reconstruídas long: 136
+2018-4-19
+arquivo events/2.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 517
+Total de tracks reconstrutívies long: 156
+Total de tracks formadas: 3247
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 388
+Total de tracks fakes: 46
+Total de tracks clones: 4
+Total de tracks reconstrutívies e reconstruídas long: 142
+2018-4-19
+arquivo events/3.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 523
+Total de tracks reconstrutívies long: 165
+Total de tracks formadas: 2854
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 387
+Total de tracks fakes: 68
+Total de tracks clones: 12
+Total de tracks reconstrutívies e reconstruídas long: 152
+2018-4-19
+arquivo events/4.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 286
+Total de tracks reconstrutívies long: 107
+Total de tracks formadas: 1813
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 231
+Total de tracks fakes: 20
+Total de tracks clones: 2
+Total de tracks reconstrutívies e reconstruídas long: 102
+2018-4-19
+arquivo events/5.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 175
+Total de tracks reconstrutívies long: 48
+Total de tracks formadas: 804
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 134
+Total de tracks fakes: 31
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 46
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40
+2018-4-19
+arquivo events/0.json
+Numeros esperados: 
+Total de tracks reconstrutívies: 121
+Total de tracks reconstrutívies long: 41
+Total de tracks formadas: 660
+Numeros encontrados: 
+Total de tracks reconstrutívies e reconstruídas: 94
+Total de tracks fakes: 8
+Total de tracks clones: 0
+Total de tracks reconstrutívies e reconstruídas long: 40

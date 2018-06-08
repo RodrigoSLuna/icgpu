@@ -9,8 +9,10 @@
 #include <vector>
 #include <iostream>
 #include "PrPixelHit.h"
-
+#include <set>
 using namespace std;
+
+
 
 /*class to store the segments*/
 class TrackSegment{
@@ -24,6 +26,8 @@ class TrackSegment{
 		vector<PrPixelHit> getTrackSegment() {return trackSegment;}
 		PrPixelHit getFirstHit(){return trackSegment[0];}
 		PrPixelHit getSecondHit(){return trackSegment[1];}
+		
+		
 		//trackSegment.size()-1
 		void setTrackSegment(PrPixelHit hit) {trackSegment.push_back(hit);}
 		/*get the status of the segment*/
@@ -32,17 +36,17 @@ class TrackSegment{
 		void setStatus(int _status){status = _status;}
 
 	/*	void printTrackSegment(){
-			for(int i = 0; i < trackSegment.size(); i++)
+			for(int i = 0; i < trackSegment.size:q(); i++)
 				cout << "x: " << trackSegment[i].x() << " y: " << trackSegment[i].y() << " z: " << trackSegment[i].z() << endl;
 		} */
 
-		float getTx(){ return tx;}
-		void setTx(float _tx){tx = _tx;}
-		float getTy(){return ty;}
-		void setTy(float _ty){ty = _ty;}
+		double getTx(){ return tx;}
+		void setTx(double _tx){tx = _tx;}
+		double getTy(){return ty;}
+		void setTy(double _ty){ty = _ty;}
 
 		TrackSegment(){}
-		TrackSegment(vector<PrPixelHit> _trackSegment, int _status, float _tx, float _ty){
+		TrackSegment(vector<PrPixelHit> _trackSegment, int _status, double _tx, double _ty){
 			trackSegment = _trackSegment;
 			status = _status;
 			tx = _tx;
@@ -53,23 +57,28 @@ class TrackSegment{
 	private:
 		vector<PrPixelHit> trackSegment;
 		int status;
-		float tx;
-		float ty;
+		double tx;
+		double ty;
 };
 
 /*class to store the tracks*/
 /*a track is made with 2 or more segments*/
 class TrackS{
 	public:
+		
 		TrackSegment getLastSeg() {return m_lastSeg;}
-		void setLastSeg(TrackSegment trackSeg) {m_lastSeg = trackSeg;}
-		void addHits(PrPixelHit hit) {m_hits.push_back(hit);}
-		vector<PrPixelHit> getHits() {return m_hits;}
-		// float getSum() {return sum;}
-		// void setSum(float _sum) {sum = _sum;}
+		//void setLastSeg(TrackSegment trackSeg) {m_lastSeg = trackSeg;}
+		void addHits(PrPixelHit hit) {
+			cnj_hits.insert(hit);	
+		}
+		vector<PrPixelHit> getHits(){ return m_hits;}
+		set<PrPixelHit> getSetHits() {return cnj_hits;}
+		int NumberHits() {return m_hits.size(); }
+		// double getSum() {return sum;}
+		// void setSum(double _sum) {sum = _sum;}
 
-		float getLastAngle() {return lastAngle;}
-		void setLastAngle(float angle) {lastAngle = angle;}
+		double getLastAngle() {return lastAngle;}
+		void setLastAngle(double angle) {lastAngle = angle;}
 
 		void setLastSeg(TrackSegment trackSeg, TrackS &track){
 			TrackSegment segment = m_lastSeg;
@@ -81,12 +90,12 @@ class TrackS{
 		//constructor
 		TrackS(){}
 
-		TrackS(vector<PrPixelHit> _track, float _sum){
+		TrackS(vector<PrPixelHit> _track, double _sum){
 			m_hits = _track;
 			sum = _sum;
 		}
 
-		TrackS(vector<PrPixelHit> _track, TrackSegment lastSeg, float _sum){
+		TrackS(vector<PrPixelHit> _track, TrackSegment lastSeg, double _sum){
 			m_hits = _track;
 			m_lastSeg = lastSeg;
 			sum = _sum;
@@ -97,10 +106,11 @@ class TrackS{
 		}
 
 	private:
+		set<PrPixelHit> cnj_hits;
 		TrackSegment m_lastSeg;
 		vector<PrPixelHit> m_hits;
-		float sum;
-		float lastAngle;
+		double sum;
+		double lastAngle;
 
 };
 
