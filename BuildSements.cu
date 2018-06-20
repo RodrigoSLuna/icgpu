@@ -1,7 +1,12 @@
 #include <cstdio>
 
 
-const int N = 4;
+/*
+Tutorial.
+https://devblogs.nvidia.com/even-easier-introduction-cuda/
+*/
+
+int N = 4;
 const int TAM_BLOCO = 2;
 #define CUDA_SAFE_CALL(call) { \
 cudaError_t err = call ; \
@@ -12,21 +17,44 @@ exit ( EXIT_FAILURE ) ;\
 }\
 }
 
-__global__ void Build(const double *X, const double *Y, const double *Z, double *SEG, double *acc_angle){
-	int i = blockIdx.x *blockDim.x + threadIdx.x;
-	int j = blockIdx.y *blockDim.y + threadIdx.y;
 
+
+//TODO
+//estou usando muitas instruções 
+__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, unsigned int N  ,double acc_angle){
+	unsigned int i = blockIdx.x *blockDim.x + threadIdx.x; //id sensor
+	unsigned int j = blockIdx.y *blockDim.y + threadIdx.y; //positions particle  
+	unsigned int k = blockIdx.z *blockDim.z + threadIdx.z;
+
+	int pos = i*N + j;
+	if(i>N or j>N or k>N)
+		return;
+
+	double x = X[ (2*N) + pos ] - X[ pos ];
+	double y = Y[ (2*N) + pos ] - Y[ pos ];
+	double z = Z[ (2*N) + pos ] - Z[ pos ];
+	double tx = x/z;
+	double ty = y/z;
+
+	unsigned int idx = k*N*N + j*N + i; 	 // levar pra funcao N^2 e N.
+
+	if(tx*tx + ty*ty <= acc_angle*acc_angle) //levar pra funcao, acc_angle ao quadrado!
+		SEG[idx] = 1;
 
 }
 
 
 int main(){
-	double *h_x, *h_y,*h_z, *h_seg, *h_angle;
+	double *h_x, *h_y,*h_z, *h_seg, *h_angle,*h_N;
 	double *d_x, *d_y, *d_z, *d_seg, *d_angle;
+	int    *d_N;
 
 	int D2_bytes = N*N;
 	int D3_bytes = N*N*N*sizeof(double);
 
+
+
+	h_x = (double*)malloc(D2_bytes);
 	h_x = (double*)malloc(D2_bytes);
 	h_y = (double*)malloc(D2_bytes);
 	h_z = (double*)malloc(D3_bytes);
@@ -45,17 +73,18 @@ int main(){
 		}
 	}
 
+	CUDA_SAFE_CALL(	cudaMalloc( (void**) &d_N, sizeof(int)  ) );
 	CUDA_SAFE_CALL(	cudaMalloc( (void**) &d_x, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_y, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_z, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_seg, D3_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_angle, sizeof(double)  ) );
 
-
-	CUDA_SAFE_CALL(	cudaMemcpy(d_x,h_y,D2_bytes,cudaMemcpyHostToDevice ));
-	CUDA_SAFE_CALL(	cudaMemcpy(d_y,h_y,D2_bytes,cudaMemcpyHostToDevice ));
-	CUDA_SAFE_CALL(	cudaMemcpy(d_z,h_z,D2_bytes,cudaMemcpyHostToDevice ));
-	CUDA_SAFE_CALL(	cudaMemcpy(d_seg,h_seg,D3_bytes,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_N,N  , sizeof(int)	,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_x,h_y,D2_bytes		,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_y,h_y,D2_bytes		,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_z,h_z,D2_bytes		,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_seg,h_seg,D3_bytes	,cudaMemcpyHostToDevice ));
 	CUDA_SAFE_CALL(	cudaMemcpy(d_angle,h_angle, sizeof( double ),cudaMemcpyHostToDevice ));
 
 
@@ -72,12 +101,12 @@ int main(){
 	CUDA_SAFE_CALL(cudaEventRecord(start));
 	
 
-	dim3 threadsBloco(TAM_BLOCO,TAM_BLOCO); // no max 1024 threads por bloco
-	dim3 blocosGrade(N/threadsBloco.x, N/threadsBloco.y );
+	dim3 threadsBloco(TAM_BLOCO,TAM_BLOCO); // 4 threads nesse bloco
+	dim3 blocosGrade(N/threadsBloco.x, N/threadsBloco.y ); // quantidade de blocos
 	/*
 		Chamada do kernel
 	*/
-	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg, d_angle);
+	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg, d_angle, d_N);
 	CUDA_SAFE_CALL ( cudaGetLastError () ) ;
 	CUDA_SAFE_CALL(cudaEventRecord(start));
 
