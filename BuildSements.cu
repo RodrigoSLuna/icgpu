@@ -21,7 +21,7 @@ exit ( EXIT_FAILURE ) ;\
 
 //TODO
 //estou usando muitas instruções 
-__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, unsigned int N  ,double acc_angle){
+__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int N  ,double acc_angle){
 	unsigned int i = blockIdx.x *blockDim.x + threadIdx.x; //id sensor
 	unsigned int j = blockIdx.y *blockDim.y + threadIdx.y; //positions particle  
 	unsigned int k = blockIdx.z *blockDim.z + threadIdx.z;
@@ -45,15 +45,15 @@ __global__ void Build(const double *X, const double *Y, const double *Z,double *
 
 
 int main(){
-	double *h_x, *h_y,*h_z, *h_seg, *h_angle,*h_N;
+	double *h_x, *h_y,*h_z, *h_seg, *h_angle;
 	double *d_x, *d_y, *d_z, *d_seg, *d_angle;
-	int    *d_N;
+	int    *d_N,*h_N;
 
 	int D2_bytes = N*N;
 	int D3_bytes = N*N*N*sizeof(double);
 
 
-
+	h_N = (int*) malloc(sizeof(int));
 	h_x = (double*)malloc(D2_bytes);
 	h_x = (double*)malloc(D2_bytes);
 	h_y = (double*)malloc(D2_bytes);
@@ -66,6 +66,8 @@ int main(){
 	//leitura dos dados que estao no host
 	//inicializo d_seg com -1
 	memset(h_seg,0,D3_bytes);
+	
+	scanf("%d",&h_N);
 	for(int i = 0;i<N;i++){
 		for(int j = 0;j<N;j++){
 			int pos = N*i+j;
@@ -80,7 +82,7 @@ int main(){
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_seg, D3_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_angle, sizeof(double)  ) );
 
-	CUDA_SAFE_CALL(	cudaMemcpy(d_N,N  , sizeof(int)	,cudaMemcpyHostToDevice ));
+	CUDA_SAFE_CALL(	cudaMemcpy(d_N,h_N  , sizeof(int)	,cudaMemcpyHostToDevice ));
 	CUDA_SAFE_CALL(	cudaMemcpy(d_x,h_y,D2_bytes		,cudaMemcpyHostToDevice ));
 	CUDA_SAFE_CALL(	cudaMemcpy(d_y,h_y,D2_bytes		,cudaMemcpyHostToDevice ));
 	CUDA_SAFE_CALL(	cudaMemcpy(d_z,h_z,D2_bytes		,cudaMemcpyHostToDevice ));
@@ -106,7 +108,7 @@ int main(){
 	/*
 		Chamada do kernel
 	*/
-	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg, d_angle, d_N);
+	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg,d_N[0], d_angle);
 	CUDA_SAFE_CALL ( cudaGetLastError () ) ;
 	CUDA_SAFE_CALL(cudaEventRecord(start));
 
