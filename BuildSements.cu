@@ -6,7 +6,7 @@ Tutorial.
 https://devblogs.nvidia.com/even-easier-introduction-cuda/
 */
 
-int N = 4;
+int N = 3;
 const int TAM_BLOCO = 2;
 #define CUDA_SAFE_CALL(call) { \
 cudaError_t err = call ; \
@@ -21,36 +21,37 @@ exit ( EXIT_FAILURE ) ;\
 
 //TODO
 //estou usando muitas instruções 
-__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int N  ,double acc_angle){
+__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int *N  ,double *acc_angle){
 	unsigned int i = blockIdx.x *blockDim.x + threadIdx.x; //id sensor
 	unsigned int j = blockIdx.y *blockDim.y + threadIdx.y; //positions particle  
 	unsigned int k = blockIdx.z *blockDim.z + threadIdx.z;
 
-	int pos = i*N + j;
-	if(i>N or j>N or k>N)
+	int pos = i*N[0] + j;
+	if(i>N[0] or j>N[0] or k>N[0])
 		return;
 
-	double x = X[ (2*N) + pos ] - X[ pos ];
-	double y = Y[ (2*N) + pos ] - Y[ pos ];
-	double z = Z[ (2*N) + pos ] - Z[ pos ];
+	double x = X[ (2*N[0]) + pos ] - X[ pos ];
+	double y = Y[ (2*N[0]) + pos ] - Y[ pos ];
+	double z = Z[ (2*N[0]) + pos ] - Z[ pos ];
 	double tx = x/z;
 	double ty = y/z;
 
-	unsigned int idx = k*N*N + j*N + i; 	 // levar pra funcao N^2 e N.
+	unsigned int idx = k*N[0]*N[0] + j*N[0] + i; 	 // levar pra funcao N^2 e N.
 
-	if(tx*tx + ty*ty <= acc_angle*acc_angle) //levar pra funcao, acc_angle ao quadrado!
+	if(tx*tx + ty*ty <= acc_angle[0]*acc_angle[0]) //levar pra funcao, acc_angle ao quadrado!
 		SEG[idx] = 1;
 
 }
 
 
 int main(){
+	
 	double *h_x, *h_y,*h_z, *h_seg, *h_angle;
 	double *d_x, *d_y, *d_z, *d_seg, *d_angle;
 	int    *d_N,*h_N;
 
 	int D2_bytes = N*N;
-	int D3_bytes = N*N*N*sizeof(double);
+	int D3_bytes = N*N*N;
 
 
 	h_N = (int*) malloc(sizeof(int));
@@ -60,9 +61,11 @@ int main(){
 	h_z = (double*)malloc(D3_bytes);
 	h_angle = (double*)malloc( sizeof(double) );
 	h_seg = (double*)malloc(D3_bytes);
-
-	if(h_x == NULL || h_y == NULL || h_z == NULL || h_seg) exit(EXIT_FAILURE);
-
+	printf("sizeof: %u\n",sizeof(h_N));
+	// if(h_x == NULL || h_y == NULL || h_z == NULL || h_seg){
+	// 	puts("FALHA");
+	// 	exit(EXIT_FAILURE);
+	// }
 	//leitura dos dados que estao no host
 	//inicializo d_seg com -1
 	memset(h_seg,0,D3_bytes);
@@ -74,13 +77,14 @@ int main(){
 			scanf("%lf %lf %lf",&h_x[pos],&h_y[pos],&h_z[pos]);
 		}
 	}
-
+	
 	CUDA_SAFE_CALL(	cudaMalloc( (void**) &d_N, sizeof(int)  ) );
 	CUDA_SAFE_CALL(	cudaMalloc( (void**) &d_x, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_y, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_z, D2_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_seg, D3_bytes  ) );
 	CUDA_SAFE_CALL( cudaMalloc( (void**) &d_angle, sizeof(double)  ) );
+
 
 	CUDA_SAFE_CALL(	cudaMemcpy(d_N,h_N  , sizeof(int)	,cudaMemcpyHostToDevice ));
 	CUDA_SAFE_CALL(	cudaMemcpy(d_x,h_y,D2_bytes		,cudaMemcpyHostToDevice ));
@@ -108,7 +112,7 @@ int main(){
 	/*
 		Chamada do kernel
 	*/
-	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg,d_N[0], d_angle);
+	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg,d_N, d_angle);
 	CUDA_SAFE_CALL ( cudaGetLastError () ) ;
 	CUDA_SAFE_CALL(cudaEventRecord(start));
 
