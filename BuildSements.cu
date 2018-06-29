@@ -17,10 +17,17 @@ exit ( EXIT_FAILURE ) ;\
 }\
 }
 
+//Mapping
+//Flat[x + WIDTH * (y + DEPTH * z)] = Original[x, y, z]
+/*
+Flat 3D -> 1D
+z = idx / (xMax * yMax);
+idx -= (z * xMax * yMax);
+int y = idx / xMax;
+int x = idx % xMax;
+*/
 
-//(2* (*N)) + pos
 //TODO
-//estou usando muitas instruções 
 __global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int *N  ,double *acc_angle){
 	unsigned int i = blockIdx.x *blockDim.x + threadIdx.x; //id sensor
 	unsigned int j = blockIdx.y *blockDim.y + threadIdx.y; //position particle j 
@@ -36,19 +43,20 @@ __global__ void Build(const double *X, const double *Y, const double *Z,double *
 	double ty = y/z;
 
 	unsigned int idx = k* (*N)* (*N) + j* (*N) + i;
-	if(tx*tx + ty*ty <= *acc_angle){ 		//levar pra funcao, acc_angle ao quadrado!
+	if(tx*tx + ty*ty <= *acc_angle * (*acc_angle)){
 		//printf("sensor: i: %d particula j: %d particula k: %d \n",i,j,k);
 		SEG[idx] = 1;
 	}
 
 }
 
+//TODO
 
 int main(){
 	
 	int D2_bytes = N*N;
 	int D3_bytes = N*N*N;
-	double h_x[D2_bytes],h_y[D2_bytes],h_z[D2_bytes],h_seg[D3_bytes], h_angle = 4; // angle already ^2
+	double h_x[D2_bytes],h_y[D2_bytes],h_z[D2_bytes],h_seg[D3_bytes], h_angle = 2; 
 	double *d_x, *d_y, *d_z, *d_seg, *d_angle;
 	int    *d_N,h_N;
 
