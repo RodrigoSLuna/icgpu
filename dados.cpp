@@ -9,7 +9,7 @@
 #include <set>
 // #include "structs.h"
 // #include "PrPixelHit.h"
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 #include <iomanip>
 //para compilar: g++ -I /usr/include/jsoncpp/ dados.cpp -ljsoncpp
 
