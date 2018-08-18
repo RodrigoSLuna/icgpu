@@ -2,7 +2,10 @@
  *
  *  @author Leticia Freire
  */
+/*
 
+BUG FIXED
+*/
 #include <fstream>
 #include <iostream>
 #include "dados.h"
