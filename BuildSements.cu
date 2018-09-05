@@ -27,8 +27,9 @@ int y = idx / xMax;
 int x = idx % xMax;
 */
 
-//TODO
-__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int *N  ,double *acc_angle){
+__global__ void Build(const double *X, const double *Y, const double *Z,double *SEG, int *N  ,double *acc_angle,int teste){
+	printf("->%d teste:%d\n",*N,teste);
+	/*
 	unsigned int i = blockIdx.x *blockDim.x + threadIdx.x; //id sensor
 	unsigned int j = blockIdx.y *blockDim.y + threadIdx.y; //position particle j 
 	unsigned int k = blockIdx.z *blockDim.z + threadIdx.z; //position particle k 
@@ -43,14 +44,12 @@ __global__ void Build(const double *X, const double *Y, const double *Z,double *
 	double ty = y/z;
 
 	unsigned int idx = k* (*N)* (*N) + j* (*N) + i;
-	if(tx*tx + ty*ty <= *acc_angle * (*acc_angle)){
-		//printf("sensor: i: %d particula j: %d particula k: %d \n",i,j,k);
+	if(tx*tx + ty*ty <= *acc_angle * (*acc_angle)){	
 		SEG[idx] = 1;
 	}
-
+	*/
 }
 
-//TODO
 
 int main(){
 	
@@ -107,10 +106,10 @@ int main(){
 	CUDA_SAFE_CALL(cudaEventCreate(&start));
 	CUDA_SAFE_CALL(cudaEventCreate(&stop));
 
-	/*
+
 	int n_threads = 1024;
 	int n_blocos = (N+n_threads-1)/n_threads;
-	*/
+
 
 	CUDA_SAFE_CALL(cudaEventRecord(start));
 	
@@ -120,7 +119,7 @@ int main(){
 	/*
 		Chamada do kernel
 	*/
-	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg,d_N, d_angle);
+	Build<<<blocosGrade,threadsBloco >>>(d_x,d_y,d_z,d_seg,d_N, d_angle,h_N);
 	CUDA_SAFE_CALL ( cudaGetLastError () ) ;
 	//
 	CUDA_SAFE_CALL(cudaEventRecord(stop));

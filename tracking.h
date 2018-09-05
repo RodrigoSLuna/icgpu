@@ -30,6 +30,7 @@ const double ACCEPTANCE_ANGLE = 0.45;
 
 //const double ACCEPTANCE_ANGLE = M_PI;
 
+double HostBuild(double M_x[64][64], double M_y[64][64],double M_z[64][64],double M_seg[64][64][64],double h_angle);
 
 class Tracking{
   public:

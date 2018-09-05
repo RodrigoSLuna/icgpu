@@ -1,8 +1,7 @@
 /* class to make the tracking
  *
  *  @author Leticia Freire
- */
-
+*/
 #include "tracking.h"
 using namespace std;
 #if defined(__cplusplus)
@@ -224,40 +223,40 @@ vector<TrackSegment> Tracking::makeSimpleSegment(vector<PrPixelHit> &nextHits, v
 //Modificacoes: retirada da funcao sqrt(), utilizando breaking_angle*breaking angle, e tirei sqrt() da funcao calculateAngle!
 // complexidade sqrt() desconhecida <
 /*make the forward process*/
-void Tracking::forwardProcess(vector<TrackSegment> &currentSeg, vector<TrackSegment> &nextSeg, vector<vector<PrPixelHit> > &hits,int snr_cur, int snr_nxt){
-	//printf("snr_cur: %d, snr_nxt: %d\n",snr_cur,snr_nxt);
-	for(int id_current = 0; id_current < (int) currentSeg.size(); id_current++){
-		//take the tx and ty of the segments
-		double tx_cur = currentSeg[id_current].getTx();
-		double ty_cur = currentSeg[id_current].getTy();
-		//take the first hit of the segment on currentSeg
-		PrPixelHit hit_cur = currentSeg[id_current].getSecondHit();
-		//PrPixelHit hit_cur = takeHit(hit_cur_id, hits);
-		for(int id_next = 0; id_next < (int) nextSeg.size(); id_next++){
+	void Tracking::forwardProcess(vector<TrackSegment> &currentSeg, vector<TrackSegment> &nextSeg, 
+		vector<vector<PrPixelHit> > &hits,int snr_cur, int snr_nxt){
+		//printf("snr_cur: %d, snr_nxt: %d\n",snr_cur,snr_nxt);
+		for(int id_current = 0; id_current < (int) currentSeg.size(); id_current++){
 			//take the tx and ty of the segments
-			TrackSegment tmp_seg = nextSeg[id_next];
-			double tx_next = tmp_seg.getTx();
-			double ty_next = tmp_seg.getTy();
-			//take the first hit of the segment on nextSeg
-			//vector<PrPixelHit> tmpNext = nextSeg[id_next].getTrackSegment();
-			PrPixelHit hit_next = nextSeg[id_next].getFirstHit();
-			//PrPixelHit hit_next = takeHit(hit_next_id, hits);
-            //if (!compareHits(hit_cur, hit_next)) continue;
-            if(!compareHits(currentSeg[id_current], nextSeg[id_next])) continue;
-			//calculate the breaking angle and verify if the segments has one common hit
-			double angle = calculateAngle(tx_cur, ty_cur, tx_next, ty_next);
-			//verify if the angle and the hit it's ok
-			if(compareBreakingAngle(angle)){
-				//increase the status
-				//if two segments has the same continuation, the preference is for the segment with greater status
-				if(currentSeg[id_current].getStatus()+1 > nextSeg[id_next].getStatus()){
-					
-					nextSeg[id_next].setStatus(currentSeg[id_current].getStatus()+1);
+			double tx_cur = currentSeg[id_current].getTx();
+			double ty_cur = currentSeg[id_current].getTy();
+			//take the first hit of the segment on currentSeg
+			PrPixelHit hit_cur = currentSeg[id_current].getSecondHit();
+			//PrPixelHit hit_cur = takeHit(hit_cur_id, hits);
+			for(int id_next = 0; id_next < (int) nextSeg.size(); id_next++){
+				//take the tx and ty of the segments
+				TrackSegment tmp_seg = nextSeg[id_next];
+				double tx_next = tmp_seg.getTx();
+				double ty_next = tmp_seg.getTy();
+				//take the first hit of the segment on nextSeg
+				//vector<PrPixelHit> tmpNext = nextSeg[id_next].getTrackSegment();
+				PrPixelHit hit_next = nextSeg[id_next].getFirstHit();
+				//PrPixelHit hit_next = takeHit(hit_next_id, hits);
+	            //if (!compareHits(hit_cur, hit_next)) continue;
+	            if(!compareHits(currentSeg[id_current], nextSeg[id_next])) continue;
+				//calculate the breaking angle and verify if the segments has one common hit
+				double angle = calculateAngle(tx_cur, ty_cur, tx_next, ty_next);
+				//verify if the angle and the hit it's ok
+				if(compareBreakingAngle(angle)){
+					//increase the status
+					//if two segments has the same continuation, the preference is for the segment with greater status
+					if(currentSeg[id_current].getStatus()+1 > nextSeg[id_next].getStatus()){
+						nextSeg[id_next].setStatus(currentSeg[id_current].getStatus()+1);
+					}
 				}
 			}
 		}
 	}
-}
 
 /*make the backward process*/
 void Tracking::backwardProcess(vector<vector<TrackSegment> > &tSegment, vector<TrackS> &tracks, vector<vector<PrPixelHit> > &hits){
@@ -341,8 +340,6 @@ void *Tracking::backwardProcessParallel(void *arg){
 void Tracking::parallelTracking(vector<vector<TrackSegment> > &tSegment, vector<TrackS> &tracks, vector<vector<PrPixelHit> > hits){
 	int i = 1;
 	int rc;
-	cout << "estou aqui" << endl;
-
     /**/
 	for(int isen =  tSegment.size()-1; isen >= 0; isen--){
 		vector<TrackSegment> currentSensor = tSegment[isen];
@@ -396,7 +393,11 @@ void Tracking::makeTracking(DataFile &data){
 	/*time*/
  	double start, finish, elapsed;
 	int no_sensors = data.getNoSensor();
+	int contHits = 0;
 	vector<vector<PrPixelHit>> hits = data.getHits();
+	for(int i = 0; i < hits.size(); i++){
+		contHits = contHits+hits[i].size();
+	}
 	/*start counting time*/
 //	GET_TIME(start);
 	/*make segments*/
@@ -407,12 +408,31 @@ void Tracking::makeTracking(DataFile &data){
 		tSegment.push_back(tmpSeg);
 	}
 	/*finish counting time*/
-//	GET_TIME(finish);	
+
+	GET_TIME(finish);
+	elapsed = finish - start;
+	//ofstream log_1("makeSegmentSeq.txt", ios_base::app | ios_base::out);
+	//log_1 << elapsed << " " << contHits <<  endl;
+	//log_1.close();
+	//printf("\t \t TEMPO DA MAKE makeSimpleSegment: %lf\n",elapsed);	
+
+	double M_x[64][64],M_y[64][64],M_z[64][64],M_seg[64][64][64];
+	for(int i = 0;i < no_sensors ;i++ ){
+		for(int j = 0;j<  hits[i].size() ;j++){
+			M_x[i][j] = hits[i][j].x();
+			M_y[i][j] = hits[i][j].y();
+			M_z[i][j] = hits[i][j].z();
+
+		}
+	} 
+
+	elapsed = HostBuild(M_x,M_y,M_z,M_seg,ACCEPTANCE_ANGLE);
+	
+
+	ofstream log_2("makeSegmentParalel.txt", ios_base::app | ios_base::out);
+	log_2 << elapsed << " " << contHits <<  endl;
+	log_2.close();
 	//count the tothal of segments
-//	int contHits = 0;
-//	for(int i = 0; i < hits.size(); i++){
-//		contHits = contHits+hits[i].size();
-//	}
 //	ofstream log("makeSimplesSegment.txt", ios_base::app | ios_base::out);
 //	log << elapsed << " " << contHits <<  endl;
 //	log.close();
@@ -422,6 +442,9 @@ void Tracking::makeTracking(DataFile &data){
 	/*start counting time*/
 //	GET_TIME(start);
     /*increase the status*/
+
+
+
 	for(int isen = 0; isen < (int) tSegment.size()-2; isen++){
 		//std::cout << tSegment[isen].size() << std::endl;
 		forwardProcess(tSegment[isen], tSegment[isen+2], hits,isen,isen+2);
@@ -440,13 +463,12 @@ void Tracking::makeTracking(DataFile &data){
 	/*finish counting time*/
     GET_TIME(finish);
     elapsed = finish - start;
-	int contHits = 0;
-	for(int i = 0; i < hits.size(); i++){
-		contHits = contHits+hits[i].size();
-	}
-	ofstream log("TotalAlgorithm.txt", ios_base::app | ios_base::out);
-	log << elapsed << " " << contHits <<  endl;
-	log.close();
+	// for(int i = 0; i < hits.size(); i++){
+	// 	contHits = contHits+hits[i].size();
+	// }
+	// ofstream log("TotalAlgorithm.txt", ios_base::app | ios_base::out);
+	// log << elapsed << " " << contHits <<  endl;
+	// log.close();
  
 }
 
